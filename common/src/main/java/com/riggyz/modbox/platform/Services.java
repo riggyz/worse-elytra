@@ -1,7 +1,7 @@
-package com.example.examplemod.platform;
+package com.riggyz.modbox.platform;
 
-import com.example.examplemod.Constants;
-import com.example.examplemod.platform.services.IPlatformHelper;
+import com.riggyz.modbox.Constants;
+import com.riggyz.modbox.platform.services.IPlatformHelper;
 
 import java.util.ServiceLoader;
 

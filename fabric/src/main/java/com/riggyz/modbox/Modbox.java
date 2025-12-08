@@ -1,8 +1,8 @@
-package com.example.examplemod;
+package com.riggyz.modbox;
 
 import net.fabricmc.api.ModInitializer;
 
-public class ExampleMod implements ModInitializer {
+public class Modbox implements ModInitializer {
     
     @Override
     public void onInitialize() {
