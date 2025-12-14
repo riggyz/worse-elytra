@@ -1,6 +1,32 @@
 {
-    "parent": "item/generated",
+    "parent": "minecraft:item/generated",
     "textures": {
-        "layer0": "modbox:item/custom_elytra"
-    }
+        "layer0": "minecraft:item/elytra"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "modbox:state": 0.0
+            },
+            "model": "minecraft:item/elytra"
+        },
+        {
+            "predicate": {
+                "modbox:state": 0.25
+            },
+            "model": "modbox:item/elytra_ruffled"
+        },
+        {
+            "predicate": {
+                "modbox:state": 0.5
+            },
+            "model": "modbox:item/elytra_withered"
+        },
+        {
+            "predicate": {
+                "modbox:state": 1.0
+            },
+            "model": "minecraft:item/broken_elytra"
+        }
+    ]
 }

@@ -1,3 +1,11 @@
 {
-  "item.modbox.custom_elytra": "Custom Elytra"
+  "item.modbox.custom_elytra": "Custom Elytra",
+  "item.modbox.elytra_ruffled": "Ruffled Elytra",
+  "item.modbox.elytra_withered": "Withered Elytra",
+  "tooltip.modbox.elytra_state": "State: ",
+  "tooltip.modbox.extra_drag": "Drag Mult: ",
+  "tooltip.modbox.speed_multiplier": "Speed: ",
+  "tooltip.modbox.max_flight_distance": "Max Distance: ",
+  "tooltip.modbox.cooldown_duration": "Cooldown: ",
+  "message.modbox.flight_exhausted": "Flight exhausted! Elytra on cooldown..."
 }
