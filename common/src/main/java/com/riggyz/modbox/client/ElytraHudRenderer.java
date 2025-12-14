@@ -4,6 +4,7 @@ import com.riggyz.modbox.Constants;
 import com.riggyz.modbox.elytra.ElytraStateHandler;
 import com.riggyz.modbox.elytra.ElytraStateHandler.ElytraState;
 import com.riggyz.modbox.item.CustomElytraItem;
+import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -12,8 +13,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Renders the elytra state HUD element between health and hunger bars.
- * Shows cooldown as a transparent overlay on the sprite (like item cooldowns).
+ * Renders the elytra state HUD element next to the hotbar (like the attack indicator).
+ * Uses a two-layer approach: desaturated background + partial colored fill.
+ * 
+ * Texture layout (elytra_hud.png):
+ * Row 0 (v=0):  Colored state icons  [NORMAL][RUFFLED][WITHERED][BROKEN]
+ * Row 1 (v=16): Desaturated versions [NORMAL][RUFFLED][WITHERED][BROKEN]
  */
 public class ElytraHudRenderer {
 
@@ -22,15 +27,19 @@ public class ElytraHudRenderer {
             "textures/gui/elytra_hud.png");
 
     // Sprite dimensions
-    private static final int SPRITE_WIDTH = 16;
-    private static final int SPRITE_HEIGHT = 16;
+    private static final int SPRITE_SIZE = 18;  // Match vanilla attack indicator size
 
-    // Texture dimensions (for UV calculations)
-    private static final int TEXTURE_WIDTH = 64;
-    private static final int TEXTURE_HEIGHT = 32;
+    // Texture dimensions (4 states × 18px wide, 2 rows × 18px tall)
+    private static final int TEXTURE_WIDTH = 72;
+    private static final int TEXTURE_HEIGHT = 36;
 
-    // Cooldown overlay color (semi-transparent white/gray)
-    private static final int COOLDOWN_OVERLAY_COLOR = 0xAAFFFFFF;
+    // Texture row offsets
+    private static final int ROW_COLORED = 0;
+    private static final int ROW_DESATURATED = SPRITE_SIZE;
+
+    // Hotbar dimensions (vanilla values)
+    private static final int HOTBAR_WIDTH = 182;
+    private static final int HOTBAR_OFFSET_Y = 22;  // Distance from bottom of screen to hotbar top
 
     /**
      * Called during HUD render to draw our custom element.
@@ -45,7 +54,7 @@ public class ElytraHudRenderer {
 
         // Check if player is wearing our custom elytra
         ItemStack chestStack = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (!(chestStack.getItem() instanceof CustomElytraItem)) {
+        if (chestStack.isEmpty() || !(chestStack.getItem() instanceof CustomElytraItem)) {
             return;
         }
 
@@ -57,82 +66,89 @@ public class ElytraHudRenderer {
         // Get elytra state
         ElytraState state = ElytraStateHandler.getStateFromStack(chestStack);
 
-        // Calculate position (center of screen, between health and hunger)
-        int screenWidth = mc.getWindow().getGuiScaledWidth();
-        int screenHeight = mc.getWindow().getGuiScaledHeight();
-
-        int x = (screenWidth / 2) - (SPRITE_WIDTH / 2);
-        int y = screenHeight - 39 - SPRITE_HEIGHT;
-
-        // Render the elytra state icon
-        renderStateIcon(graphics, x, y, state);
-
-        // Render cooldown overlay
-        float cooldownPercent = getCooldownPercent(player, chestStack);
-        if (cooldownPercent > 0) {
-            renderCooldownOverlay(graphics, x, y, cooldownPercent);
-        }
-    }
-
-    /**
-     * Get the cooldown percentage (1.0 = full cooldown, 0.0 = ready).
-     */
-    private static float getCooldownPercent(Player player, ItemStack elytra) {
-        int remainingCooldown = ElytraStateHandler.getRemainingCooldown(player, elytra);
-
-        if (remainingCooldown <= 0) {
-            return 0f;
-        }
-
-        ElytraState state = ElytraStateHandler.getStateFromStack(elytra);
-        int maxCooldown = state.baseCooldownTicks;
-
-        if (maxCooldown <= 0) {
-            return 0f;
-        }
-
-        return (float) remainingCooldown / maxCooldown;
-    }
-
-    /**
-     * Render the elytra state icon.
-     */
-    private static void renderStateIcon(GuiGraphics graphics, int x, int y, ElytraState state) {
-        int u = getStateIndex(state) * SPRITE_WIDTH;
-        int v = 0;
-
-        graphics.blit(
-                HUD_TEXTURE,
-                x, y,
-                u, v,
-                SPRITE_WIDTH, SPRITE_HEIGHT,
-                TEXTURE_WIDTH, TEXTURE_HEIGHT);
-    }
-
-    /**
-     * Render the cooldown overlay (fills from bottom to top like item cooldowns).
-     */
-    private static void renderCooldownOverlay(GuiGraphics graphics, int x, int y, float percent) {
-        // Calculate overlay height (fills from bottom)
-        int overlayHeight = Math.round(SPRITE_HEIGHT * percent);
-
-        if (overlayHeight <= 0) {
+        if (!ElytraStateHandler.isOnCooldown(player, chestStack))
+        {
             return;
         }
 
-        // Draw from bottom of sprite upward
-        int overlayY = y + (SPRITE_HEIGHT - overlayHeight);
+        // Calculate position - right side of hotbar (mirroring attack indicator on left)
+        // Attack indicator: left of hotbar at (screenWidth/2 - 91 - 22, ...)
+        // Our indicator: right of hotbar at (screenWidth/2 + 91 + 6, ...)
+        int screenWidth = mc.getWindow().getGuiScaledWidth();
+        int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        graphics.fill(
-                x,
-                overlayY,
-                x + SPRITE_WIDTH,
-                overlayY + overlayHeight,
-                COOLDOWN_OVERLAY_COLOR);
+        // Base position: right of hotbar
+        int x = (screenWidth / 2) + (HOTBAR_WIDTH / 2) + 6;  // 6px gap from hotbar edge
+        int y = screenHeight - HOTBAR_OFFSET_Y + 2;
+
+        // If attack indicator is set to HOTBAR and currently showing (attack on cooldown),
+        // offset further right to avoid overlap
+        AttackIndicatorStatus attackIndicator = mc.options.attackIndicator().get();
+        float attackStrength = player.getAttackStrengthScale(0.0f);
+        boolean attackIndicatorVisible = attackIndicator == AttackIndicatorStatus.HOTBAR && attackStrength < 1.0f;
+        
+        if (attackIndicatorVisible) {
+            x += SPRITE_SIZE + 6;  // Move right by icon size + small gap
+        }
+
+        // Get cooldown from vanilla system (smooth with partialTick)
+        float cooldownPercent = player.getCooldowns().getCooldownPercent(chestStack.getItem(), partialTick);
+
+        // Render using attack indicator style
+        renderAttackIndicatorStyle(graphics, x, y, state, cooldownPercent);
     }
 
     /**
-     * Get sprite index for state.
+     * Renders the elytra icon in vanilla attack indicator style.
+     * - Always draws the desaturated (gray) background
+     * - Draws colored version filling from bottom based on readiness
+     */
+    private static void renderAttackIndicatorStyle(GuiGraphics graphics, int x, int y, 
+            ElytraState state, float cooldownPercent) {
+        
+        int stateIndex = getStateIndex(state);
+        int u = stateIndex * SPRITE_SIZE;
+
+        // Calculate fill amount (1.0 = ready, 0.0 = just triggered)
+        // We want to show fill amount, not cooldown amount
+        float fillPercent = 1.0f - cooldownPercent;
+
+        if (fillPercent >= 1.0f) {
+            // Fully ready - just draw the colored icon
+            graphics.blit(
+                    HUD_TEXTURE,
+                    x, y,
+                    u, ROW_COLORED,
+                    SPRITE_SIZE, SPRITE_SIZE,
+                    TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        } else {
+            // On cooldown - draw desaturated background + partial colored fill
+
+            // Layer 1: Full desaturated background
+            graphics.blit(
+                    HUD_TEXTURE,
+                    x, y,
+                    u, ROW_DESATURATED,
+                    SPRITE_SIZE, SPRITE_SIZE,
+                    TEXTURE_WIDTH, TEXTURE_HEIGHT);
+
+            // Layer 2: Partial colored overlay (fills from bottom)
+            if (fillPercent > 0) {
+                int filledHeight = (int) (fillPercent * (SPRITE_SIZE + 1));  // +1 for visual smoothness
+                int yOffset = SPRITE_SIZE - filledHeight;
+
+                graphics.blit(
+                        HUD_TEXTURE,
+                        x, y + yOffset,                    // Screen position (shifted down)
+                        u, ROW_COLORED + yOffset,          // Texture position (also shifted)
+                        SPRITE_SIZE, filledHeight,         // Partial height
+                        TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            }
+        }
+    }
+
+    /**
+     * Get sprite column index for state.
      */
     private static int getStateIndex(ElytraState state) {
         return switch (state) {

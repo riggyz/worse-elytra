@@ -8,7 +8,6 @@ import net.minecraft.world.item.ItemStack;
 public class ElytraStateHandler {
 
     private static final String STATE_KEY = "elytra_state";
-    private static final String COOLDOWN_END_TAG = "modbox:cooldown_end";
 
     // ==================== ELYTRA STATE ENUM ====================
     public enum ElytraState {
@@ -80,42 +79,15 @@ public class ElytraStateHandler {
      */
     public static void setCooldown(Player player, ItemStack elytra) {
         ElytraState state = getStateFromStack(elytra);
-        long cooldownEnd = player.level().getGameTime() + state.baseCooldownTicks;
-        elytra.getOrCreateTag().putLong(COOLDOWN_END_TAG, cooldownEnd);
-
         player.getCooldowns().addCooldown(elytra.getItem(), state.baseCooldownTicks);
     }
 
-    /**
-     * Get the remaining cooldown ticks.
-     * Returns 0 if not on cooldown.
-     */
-    public static int getRemainingCooldown(Player player, ItemStack elytra) {
-        if (!elytra.hasTag()) {
-            return 0;
-        }
-
-        long cooldownEnd = elytra.getOrCreateTag().getLong(COOLDOWN_END_TAG);
-        long currentTime = player.level().getGameTime();
-        long remaining = cooldownEnd - currentTime;
-
-        return remaining > 0 ? (int) remaining : 0;
+    public static float getRemainingCooldown(Player player, ItemStack elytra) {
+        return player.getCooldowns().getCooldownPercent(elytra.getItem(), 0.0f);
     }
 
-    /**
-     * Check if the elytra is on cooldown.
-     */
     public static boolean isOnCooldown(Player player, ItemStack elytra) {
-        return getRemainingCooldown(player, elytra) > 0;
-    }
-
-    /**
-     * Clear the cooldown.
-     */
-    public static void clearCooldown(ItemStack elytra) {
-        if (elytra.hasTag()) {
-            elytra.getOrCreateTag().remove(COOLDOWN_END_TAG);
-        }
+        return player.getCooldowns().isOnCooldown(elytra.getItem());
     }
 
     // ==================== STATE METHODS ====================

@@ -6,7 +6,6 @@ import com.riggyz.modbox.elytra.ElytraStateHandler.ElytraState;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -50,6 +49,8 @@ public class CustomElytraItem extends ElytraItem {
 
     /**
      * Check if the elytra has enough durability to fly.
+     * Note: This only checks durability. Cooldown is checked separately
+     * in platform-specific implementations where Player context is available.
      */
     public static boolean isFlyEnabled(ItemStack stack) {
         int effectiveMax = stack.getMaxDamage();
@@ -101,6 +102,8 @@ public class CustomElytraItem extends ElytraItem {
 
             // Stop flying if currently flying
             if (player.isFallFlying()) {
+                player.displayClientMessage(
+                        Component.literal("Flying Canceled"), false);
                 player.stopFallFlying();
             }
         }
