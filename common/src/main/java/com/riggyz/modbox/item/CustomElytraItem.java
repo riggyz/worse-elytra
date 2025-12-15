@@ -1,5 +1,6 @@
 package com.riggyz.modbox.item;
 
+import com.riggyz.modbox.client.ElytraParticleEffects;
 import com.riggyz.modbox.elytra.ElytraStateHandler;
 import com.riggyz.modbox.elytra.ElytraStateHandler.ElytraState;
 import com.riggyz.modbox.Constants;
@@ -98,6 +99,9 @@ public class CustomElytraItem extends ElytraItem {
                     SoundEvents.ITEM_BREAK,
                     SoundSource.PLAYERS,
                     1.0f, 0.5f);
+
+            // Spawn big puff of smoke for degradation
+            ElytraParticleEffects.spawnDegradationPuff(player);
 
             if (player.isFallFlying()) {
                 player.stopFallFlying();

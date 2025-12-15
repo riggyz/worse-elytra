@@ -1,6 +1,8 @@
 package com.riggyz.modbox.elytra;
 
+import com.riggyz.modbox.client.ElytraParticleEffects;
 import com.riggyz.modbox.elytra.ElytraStateHandler.ElytraState;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -135,12 +137,7 @@ public class FlightDistanceTracker {
         player.stopFallFlying();
 
         ElytraStateHandler.setCooldown(player, elytra);
-
-        // Vec3 currentMotion = player.getDeltaMovement();
-        // player.setDeltaMovement(
-        //         currentMotion.x * 0.5,
-        //         -0.5,
-        //         currentMotion.z * 0.5);
+        ElytraParticleEffects.spawnExhaustPuff(player);
 
         player.level().playSound(
                 null,

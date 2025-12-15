@@ -1,5 +1,6 @@
 package com.riggyz.modbox.mixin;
 
+import com.riggyz.modbox.client.ElytraParticleEffects;
 import com.riggyz.modbox.item.CustomElytraItem;
 
 import net.minecraft.world.entity.LivingEntity;

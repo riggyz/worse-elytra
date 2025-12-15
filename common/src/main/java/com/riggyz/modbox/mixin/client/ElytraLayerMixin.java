@@ -1,5 +1,7 @@
 package com.riggyz.modbox.mixin.client;
 
+import com.riggyz.modbox.Constants;
+import com.riggyz.modbox.client.render.ElytraMaskTextureManager;
 import com.riggyz.modbox.elytra.ElytraStateHandler;
 import com.riggyz.modbox.elytra.ElytraStateHandler.ElytraState;
 import com.riggyz.modbox.item.CustomElytraItem;
@@ -8,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -18,11 +21,11 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -31,8 +34,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityModel<T>>
         extends RenderLayer<T, M> {
 
-    private static final ResourceLocation CUSTOM_ELYTRA_TEXTURE = new ResourceLocation("minecraft",
+    private static final ResourceLocation VANILLA_ELYTRA_TEXTURE = new ResourceLocation("minecraft",
             "textures/entity/elytra.png");
+
+    private static final ResourceLocation CUSTOM_ELYTRA_MASK = new ResourceLocation(Constants.MOD_ID,
+            "textures/entity/elytra_mask.png");
 
     @Shadow
     @Final
@@ -65,9 +71,26 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
         // Cancel vanilla rendering, we'll do it ourselves
         ci.cancel();
 
-        // Get the texture for current state
+        ResourceLocation baseTexture = VANILLA_ELYTRA_TEXTURE;
+        if (entity instanceof AbstractClientPlayer player) {
+            if (player.isElytraLoaded() && player.getElytraTextureLocation() != null) {
+                // Special elytra texture from Mojang profile
+                baseTexture = player.getElytraTextureLocation();
+            } else if (player.isCapeLoaded()
+                    && player.getCloakTextureLocation() != null
+                    && player.isModelPartShown(PlayerModelPart.CAPE)) {
+                baseTexture = player.getCloakTextureLocation();
+            }
+        }
+
+        // Only apply the mask when the elytra is BROKEN
         ElytraState state = ElytraStateHandler.getStateFromStack(chestStack);
-        ResourceLocation texture = modbox$getTextureForState(state);
+        ResourceLocation finalTexture;
+        if (state == ElytraState.BROKEN) {
+            finalTexture = ElytraMaskTextureManager.getMaskedTexture(baseTexture, CUSTOM_ELYTRA_MASK);
+        } else {
+            finalTexture = baseTexture;
+        }
 
         // Setup pose
         poseStack.pushPose();
@@ -79,10 +102,10 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
         // Setup elytra model
         this.elytraModel.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
-        // Render
+        // Render the combined/masked texture using vanilla-style rendering
         VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(
                 buffer,
-                RenderType.armorCutoutNoCull(texture),
+                RenderType.armorCutoutNoCull(finalTexture),
                 false,
                 chestStack.hasFoil());
 
@@ -94,15 +117,5 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
                 1.0F, 1.0F, 1.0F, 1.0F);
 
         poseStack.popPose();
-    }
-
-    @Unique
-    private ResourceLocation modbox$getTextureForState(ElytraState state) {
-        return switch (state) {
-            case NORMAL -> CUSTOM_ELYTRA_TEXTURE;
-            case RUFFLED -> CUSTOM_ELYTRA_TEXTURE;
-            case WITHERED -> CUSTOM_ELYTRA_TEXTURE;
-            case BROKEN -> CUSTOM_ELYTRA_TEXTURE;
-        };
     }
 }

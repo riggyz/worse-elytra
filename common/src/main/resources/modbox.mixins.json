@@ -11,6 +11,7 @@
         "ItemStackMaxDamageMixin"
     ],
     "client": [
+        "client.CapeLayerMixin",
         "client.ElytraLayerMixin"
     ],
     "server": [],
