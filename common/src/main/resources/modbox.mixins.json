@@ -7,12 +7,10 @@
     "mixins": [
         "ElytraFlightMixin",
         "PlayerFlightTickMixin",
-        "ElytraActivationMixin",
         "ElytraItemDamageMixin",
         "ItemStackMaxDamageMixin"
     ],
     "client": [
-        "MixinMinecraft",
         "client.ElytraLayerMixin"
     ],
     "server": [],

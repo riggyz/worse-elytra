@@ -1,10 +1,10 @@
 package com.riggyz.modbox.command;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.riggyz.modbox.elytra.ElytraStateHandler;
 import com.riggyz.modbox.elytra.ElytraStateHandler.ElytraState;
 import com.riggyz.modbox.elytra.FlightDistanceTracker;
 
+import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -14,19 +14,25 @@ import net.minecraft.world.item.ItemStack;
 
 public class ElytraDebugCommand {
 
+    private static final int OP_LEVEL = 2;
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("elytradebug")
+        dispatcher.register(Commands.literal("elytra")
+                // OP-only commands (modify elytra state/durability)
                 .then(Commands.literal("break")
+                        .requires(source -> source.hasPermission(OP_LEVEL))
                         .executes(context -> setDamagePercent(context.getSource(), 0.99f)))
-                .then(Commands.literal("half")
-                        .executes(context -> setDamagePercent(context.getSource(), 0.50f)))
                 .then(Commands.literal("repair")
+                        .requires(source -> source.hasPermission(OP_LEVEL))
                         .executes(context -> repairFull(context.getSource())))
                 .then(Commands.literal("cooldown")
+                        .requires(source -> source.hasPermission(OP_LEVEL))
                         .executes(context -> triggerCooldown(context.getSource())))
                 .then(Commands.literal("degrade")
+                        .requires(source -> source.hasPermission(OP_LEVEL))
                         .executes(context -> forceDegradation(context.getSource())))
                 .then(Commands.literal("state")
+                        .requires(source -> source.hasPermission(OP_LEVEL))
                         .then(Commands.literal("normal")
                                 .executes(context -> setElytraState(context.getSource(), ElytraState.NORMAL)))
                         .then(Commands.literal("ruffled")
@@ -35,14 +41,13 @@ public class ElytraDebugCommand {
                                 .executes(context -> setElytraState(context.getSource(), ElytraState.WITHERED)))
                         .then(Commands.literal("broken")
                                 .executes(context -> setElytraState(context.getSource(), ElytraState.BROKEN))))
+                // Available to all players
                 .then(Commands.literal("info")
                         .executes(context -> showInfo(context.getSource())))
                 .then(Commands.literal("hud")
                         .executes(context -> {
-                            CommandSourceStack source = context.getSource();
                             if (context.getSource().getEntity() instanceof Player player) {
                                 FlightDistanceTracker.toggleDetailedHUD(player);
-                                source.sendSuccess(() -> Component.literal("Toggled detailed HUD"), false);
                                 return 1;
                             }
                             return 0;
@@ -183,8 +188,6 @@ public class ElytraDebugCommand {
         source.sendSuccess(() -> Component.literal("State: " + state.name()), false);
         source.sendSuccess(() -> Component.literal("Can Fly: " + state.canFly()), false);
         source.sendSuccess(() -> Component.literal("Durability: " + (maxDamage - damage) + "/" + maxDamage), false);
-        // source.sendSuccess(() -> Component.literal("Speed Multiplier: " + (int) (state.multiplier * 100) + "%"), false);
-        // source.sendSuccess(() -> Component.literal("Max Speed: " + state.maxSpeed), false);
         source.sendSuccess(() -> Component.literal("Max Distance: " + (int) state.maxDistance + " blocks"), false);
         source.sendSuccess(() -> Component.literal("Cooldown Duration: " + (state.baseCooldownTicks / 20.0) + "s"),
                 false);

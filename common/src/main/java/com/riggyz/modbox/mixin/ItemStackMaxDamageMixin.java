@@ -1,8 +1,10 @@
 package com.riggyz.modbox.mixin;
 
+import com.riggyz.modbox.Constants;
 import com.riggyz.modbox.elytra.ElytraStateHandler;
 import com.riggyz.modbox.elytra.ElytraStateHandler.ElytraState;
 import com.riggyz.modbox.item.CustomElytraItem;
+
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,7 +24,7 @@ public abstract class ItemStackMaxDamageMixin {
         if (this.getItem() instanceof CustomElytraItem) {
             ItemStack self = (ItemStack) (Object) this;
             ElytraState state = ElytraStateHandler.getStateFromStack(self);
-            cir.setReturnValue(state.getMaxDurability(CustomElytraItem.BASE_DURABILITY));
+            cir.setReturnValue(state.getMaxDurability(Constants.ELYTRA_BASE_DURABILITY));
         }
     }
 }

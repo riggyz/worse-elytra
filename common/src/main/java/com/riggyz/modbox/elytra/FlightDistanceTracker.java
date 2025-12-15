@@ -18,8 +18,6 @@ public class FlightDistanceTracker {
 
     private static final Map<UUID, FlightData> FLIGHT_DATA = new WeakHashMap<>();
 
-    private static final double MIN_FLIGHT_DISTANCE = 10.0;
-
     public static class FlightData {
         public Vec3 lastPosition;
         public double totalDistance;
@@ -82,18 +80,11 @@ public class FlightDistanceTracker {
                 }
             }
 
-            // Display speed info on action bar
             if (DETAILED_HUD.getOrDefault(playerId, false)) {
-                displayDetailedFlightHUD(player, elytra, state, data);
-            } else {
                 displayFlightHUD(player, elytra, state, data);
             }
 
         } else {
-            // Not flying - check if we just landed
-            if (data != null && data.wasFlying) {
-                onFlightEnd(player, elytra, data);
-            }
             FLIGHT_DATA.remove(playerId);
         }
     }
@@ -138,51 +129,6 @@ public class FlightDistanceTracker {
     }
 
     /**
-     * Alternative: More detailed HUD with XYZ components
-     */
-    private static void displayDetailedFlightHUD(Player player, ItemStack elytra, ElytraState state, FlightData data) {
-        Vec3 velocity = player.getDeltaMovement();
-
-        // Convert to blocks per second
-        double xBps = velocity.x * 20;
-        double yBps = velocity.y * 20;
-        double zBps = velocity.z * 20;
-        double totalBps = velocity.length() * 20;
-
-        // Distance remaining
-        double remaining = state.maxDistance - data.totalDistance;
-
-        // Build detailed HUD
-        Component hud = Component.literal("")
-                .append(Component.literal("[").withStyle(ChatFormatting.DARK_GRAY))
-                .append(Component.literal(state.name()).withStyle(getStateColor(state)))
-                .append(Component.literal("] ").withStyle(ChatFormatting.DARK_GRAY))
-                .append(Component.literal("Total: ").withStyle(ChatFormatting.GRAY))
-                .append(Component.literal(String.format("%.1f", totalBps)).withStyle(ChatFormatting.WHITE))
-                .append(Component.literal(" | ").withStyle(ChatFormatting.DARK_GRAY))
-                .append(Component.literal("X: ").withStyle(ChatFormatting.RED))
-                .append(Component.literal(String.format("%+.1f", xBps)).withStyle(ChatFormatting.WHITE))
-                .append(Component.literal(" Y: ").withStyle(ChatFormatting.GREEN))
-                .append(Component.literal(String.format("%+.1f", yBps)).withStyle(ChatFormatting.WHITE))
-                .append(Component.literal(" Z: ").withStyle(ChatFormatting.BLUE))
-                .append(Component.literal(String.format("%+.1f", zBps)).withStyle(ChatFormatting.WHITE))
-                .append(Component.literal(" | ").withStyle(ChatFormatting.DARK_GRAY))
-                .append(Component.literal(String.format("%.0f/%.0f", remaining, state.maxDistance))
-                        .withStyle(ChatFormatting.YELLOW));
-
-        player.displayClientMessage(hud, true);
-    }
-
-    private static ChatFormatting getStateColor(ElytraState state) {
-        return switch (state) {
-            case NORMAL -> ChatFormatting.GREEN;
-            case RUFFLED -> ChatFormatting.YELLOW;
-            case WITHERED -> ChatFormatting.RED;
-            case BROKEN -> ChatFormatting.DARK_GRAY;
-        };
-    }
-
-    /**
      * Force the player out of flight mode
      */
     private static void kickOutOfFlight(Player player, ItemStack elytra, FlightData data) {
@@ -190,41 +136,21 @@ public class FlightDistanceTracker {
 
         ElytraStateHandler.setCooldown(player, elytra);
 
-        Vec3 currentMotion = player.getDeltaMovement();
-        player.setDeltaMovement(
-                currentMotion.x * 0.5,
-                -0.5,
-                currentMotion.z * 0.5);
-
-        player.displayClientMessage(
-                Component.literal("Flight exhausted!  Elytra on cooldown...")
-                        .withStyle(ChatFormatting.RED),
-                false);
+        // Vec3 currentMotion = player.getDeltaMovement();
+        // player.setDeltaMovement(
+        //         currentMotion.x * 0.5,
+        //         -0.5,
+        //         currentMotion.z * 0.5);
 
         player.level().playSound(
                 null,
                 player.getX(), player.getY(), player.getZ(),
-                SoundEvents.ELYTRA_FLYING,
+                SoundEvents.SHULKER_BOX_CLOSE,
                 SoundSource.PLAYERS,
                 1.0f, 0.5f);
 
         data.wasFlying = false;
         data.totalDistance = 0;
-    }
-
-    /**
-     * Called when flight ends naturally (landing)
-     */
-    private static void onFlightEnd(Player player, ItemStack elytra, FlightData data) {
-        // Optional: Show flight summary
-        if (data.totalDistance >= MIN_FLIGHT_DISTANCE) {
-            player.displayClientMessage(
-                    Component.literal("Flight ended - ")
-                            .withStyle(ChatFormatting.GRAY)
-                            .append(Component.literal(String.format("%.0f blocks", data.totalDistance))
-                                    .withStyle(ChatFormatting.AQUA)),
-                    false);
-        }
     }
 
     // ==================== PUBLIC GETTERS ====================

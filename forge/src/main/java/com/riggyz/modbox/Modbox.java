@@ -2,7 +2,6 @@ package com.riggyz.modbox;
 
 import com.riggyz.modbox.command.ElytraDebugCommand;
 import com.riggyz.modbox.item.ForgeCustomElytraItem;
-import com.riggyz.modbox.item.ModItems;
 
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,20 +21,16 @@ public class Modbox {
     public Modbox() {
         eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        ITEMS.register("custom_elytra", () -> {
-            // Create instance
+        ITEMS.register(Constants.CUSTOM_ELYTRA_ID, () -> {
             Item customElytra = new ForgeCustomElytraItem();
-
             ModItems.CUSTOM_ELYTRA = customElytra;
 
             return customElytra;
         });
 
         ITEMS.register(eventBus);
-
         MinecraftForge.EVENT_BUS.addListener(this::onRegisterCommands);
 
-        Constants.LOG.info("Hello Forge world!");
         CommonClass.init();
     }
 

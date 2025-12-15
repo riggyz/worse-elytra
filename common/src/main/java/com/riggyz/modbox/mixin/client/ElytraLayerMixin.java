@@ -1,11 +1,11 @@
 package com.riggyz.modbox.mixin.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.riggyz.modbox.Constants;
 import com.riggyz.modbox.elytra.ElytraStateHandler;
 import com.riggyz.modbox.elytra.ElytraStateHandler.ElytraState;
 import com.riggyz.modbox.item.CustomElytraItem;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.ElytraModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -38,15 +38,11 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
     @Final
     private ElytraModel<T> elytraModel;
 
-    // Vanilla elytra texture for reference
-    @Unique
-    private static final ResourceLocation VANILLA_ELYTRA = new ResourceLocation("textures/entity/elytra.png");
-
-    // Required constructor for extending RenderLayer
     public ElytraLayerMixin(RenderLayerParent<T, M> parent) {
         super(parent);
     }
 
+    // TODO: do we need this to render the elytra?
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", at = @At("HEAD"), cancellable = true)
     private void modbox$renderCustomElytra(
             PoseStack poseStack,
@@ -63,7 +59,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
         ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
 
         if (!(chestStack.getItem() instanceof CustomElytraItem)) {
-            return; // Let vanilla handle it
+            return;
         }
 
         // Cancel vanilla rendering, we'll do it ourselves

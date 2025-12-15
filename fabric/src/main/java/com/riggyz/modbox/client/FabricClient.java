@@ -8,6 +8,5 @@ public class FabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         ElytraItemProperties.register();
         FabricHudRenderEvent.register();
-        // ... other client init
     }
 }

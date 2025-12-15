@@ -2,6 +2,7 @@ package com.riggyz.modbox.mixin;
 
 import com.riggyz.modbox.elytra.ElytraRepairHandler;
 import com.riggyz.modbox.elytra.ElytraRepairHandler.RepairResult;
+
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -26,7 +27,6 @@ public abstract class AnvilMenuMixin extends ItemCombinerMenu {
     @Shadow
     private int repairItemCountCost;
 
-    // Required constructor for extending ItemCombinerMenu
     private AnvilMenuMixin(MenuType<?> menuType, int containerId, Inventory inventory, ContainerLevelAccess access) {
         super(menuType, containerId, inventory, access);
     }

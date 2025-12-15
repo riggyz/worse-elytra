@@ -4,7 +4,8 @@ import com.riggyz.modbox.Constants;
 import com.riggyz.modbox.elytra.ElytraStateHandler;
 import com.riggyz.modbox.elytra.ElytraStateHandler.ElytraState;
 import com.riggyz.modbox.item.CustomElytraItem;
-import com.riggyz.modbox.item.ModItems;
+import com.riggyz.modbox.ModItems;
+
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -27,7 +28,6 @@ public class ForgeElytraItemProperties {
                         }
 
                         ElytraState state = ElytraStateHandler.getStateFromStack(stack);
-
                         return switch (state) {
                             case NORMAL -> 0.0f;
                             case RUFFLED -> 0.25f;

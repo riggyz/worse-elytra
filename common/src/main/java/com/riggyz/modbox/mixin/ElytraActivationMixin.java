@@ -1,6 +1,7 @@
 package com.riggyz.modbox.mixin;
 
 import com.riggyz.modbox.elytra.ElytraStateHandler;
+
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -14,11 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Player.class)
 public abstract class ElytraActivationMixin {
 
-    /**
-     * Prevents elytra activation when on cooldown.
-     * Targets tryToStartFallFlying which is called when player presses jump
-     * mid-air.
-     */
     @Inject(method = "tryToStartFallFlying", at = @At("HEAD"), cancellable = true)
     private void modbox$preventActivationOnCooldown(CallbackInfoReturnable<Boolean> cir) {
         Player self = (Player) (Object) this;

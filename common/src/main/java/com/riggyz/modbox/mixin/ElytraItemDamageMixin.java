@@ -1,6 +1,7 @@
 package com.riggyz.modbox.mixin;
 
 import com.riggyz.modbox.item.CustomElytraItem;
+
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -43,7 +44,6 @@ public abstract class ElytraItemDamageMixin {
         int effectiveMax = self.getMaxDamage();
         int newDamage = currentDamage + amount;
 
-        // Check if damage would exceed the effective max for this state
         if (newDamage >= effectiveMax) {
             CustomElytraItem.handleDegradation(player, self);
         } else {
