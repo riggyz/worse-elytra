@@ -16,7 +16,10 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.example.examplemod.ExampleMod"
+            "com.riggyz.modbox.Modbox"
+        ],
+        "client": [
+            "com.riggyz.modbox.client.FabricClient"
         ]
     },
     "mixins": [
@@ -33,4 +36,3 @@
         "another-mod": "*"
     }
 }
-  

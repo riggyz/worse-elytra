@@ -1,0 +1,18 @@
+{
+  "item.modbox.custom_elytra": "Elytra",
+  "item.modbox.ruffled_prefix": "Ruffled",
+  "item.modbox.withered_prefix": "Withered",
+  "item.modbox.broken_prefix": "Broken",
+
+  "lore.modbox.normal": "They look to be in perfect condition, you feel as if you could fly forever.",
+  "lore.modbox.ruffled": "After hours of turbulent flight, these elytra have become ruffled and less effective.",
+  "lore.modbox.withered": "Sickly and damaged, these elytra struggle to keep you aloft.",
+  "lore.modbox.broken": "The broken spirit of these elytra yearn for flight, but they can no longer support it.",
+
+  "tooltip.modbox.elytra_state": "State: ",
+  "tooltip.modbox.extra_drag": "Drag Mult: ",
+  "tooltip.modbox.speed_multiplier": "Speed: ",
+  "tooltip.modbox.max_flight_distance": "Max Distance: ",
+  "tooltip.modbox.cooldown_duration": "Cooldown: ",
+  "message.modbox.flight_exhausted": "Flight exhausted! Elytra on cooldown..."
+}
