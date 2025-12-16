@@ -16,10 +16,10 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.riggyz.modbox.Modbox"
+            "com.riggyz.worse_elytra.WorseElytra"
         ],
         "client": [
-            "com.riggyz.modbox.client.FabricClient"
+            "com.riggyz.worse_elytra.client.FabricClient"
         ]
     },
     "mixins": [

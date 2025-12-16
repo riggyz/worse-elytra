@@ -16,11 +16,11 @@
       ],
       "vmArgs": [
         "@C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\build\\moddev\\clientRunVmArgs.txt",
-        "-Dfml.modFolders\u003dmodbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "-Dfml.modFolders\u003dworse_elytra%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\forge\\run",
       "env": {
-        "MOD_CLASSES": "modbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "MOD_CLASSES": "worse_elytra%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
       },
       "console": "internalConsole",
       "shortenCommandLine": "none"
@@ -40,11 +40,11 @@
       ],
       "vmArgs": [
         "@C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\build\\moddev\\dataRunVmArgs.txt",
-        "-Dfml.modFolders\u003dmodbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "-Dfml.modFolders\u003dworse_elytra%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\forge\\run",
       "env": {
-        "MOD_CLASSES": "modbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "MOD_CLASSES": "worse_elytra%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
       },
       "console": "internalConsole",
       "shortenCommandLine": "none"
@@ -64,11 +64,11 @@
       ],
       "vmArgs": [
         "@C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\build\\moddev\\serverRunVmArgs.txt",
-        "-Dfml.modFolders\u003dmodbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "-Dfml.modFolders\u003dworse_elytra%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\forge\\run",
       "env": {
-        "MOD_CLASSES": "modbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "MOD_CLASSES": "worse_elytra%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
       },
       "console": "internalConsole",
       "shortenCommandLine": "none"
