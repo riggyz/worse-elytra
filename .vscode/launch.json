@@ -12,15 +12,15 @@
       "projectName": "forge",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\build\\moddev\\clientRunProgramArgs.txt"
+        "@C:\\_Src\\Prod\\worse-elytra\\forge\\build\\moddev\\clientRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\build\\moddev\\clientRunVmArgs.txt",
-        "-Dfml.modFolders\u003dmodbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "@C:\\_Src\\Prod\\worse-elytra\\forge\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dworse_elytra%%C:\\_Src\\Prod\\worse-elytra\\forge\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\forge\\run",
       "env": {
-        "MOD_CLASSES": "modbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "MOD_CLASSES": "worse_elytra%%C:\\_Src\\Prod\\worse-elytra\\forge\\bin\\main"
       },
       "console": "internalConsole",
       "shortenCommandLine": "none"
@@ -36,15 +36,15 @@
       "projectName": "forge",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\build\\moddev\\dataRunProgramArgs.txt"
+        "@C:\\_Src\\Prod\\worse-elytra\\forge\\build\\moddev\\dataRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\build\\moddev\\dataRunVmArgs.txt",
-        "-Dfml.modFolders\u003dmodbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "@C:\\_Src\\Prod\\worse-elytra\\forge\\build\\moddev\\dataRunVmArgs.txt",
+        "-Dfml.modFolders\u003dworse_elytra%%C:\\_Src\\Prod\\worse-elytra\\forge\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\forge\\run",
       "env": {
-        "MOD_CLASSES": "modbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "MOD_CLASSES": "worse_elytra%%C:\\_Src\\Prod\\worse-elytra\\forge\\bin\\main"
       },
       "console": "internalConsole",
       "shortenCommandLine": "none"
@@ -60,15 +60,15 @@
       "projectName": "forge",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\build\\moddev\\serverRunProgramArgs.txt"
+        "@C:\\_Src\\Prod\\worse-elytra\\forge\\build\\moddev\\serverRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\build\\moddev\\serverRunVmArgs.txt",
-        "-Dfml.modFolders\u003dmodbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "@C:\\_Src\\Prod\\worse-elytra\\forge\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dworse_elytra%%C:\\_Src\\Prod\\worse-elytra\\forge\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\forge\\run",
       "env": {
-        "MOD_CLASSES": "modbox%%C:\\_Src\\Sdbx\\MultiLoader-Template\\forge\\bin\\main"
+        "MOD_CLASSES": "worse_elytra%%C:\\_Src\\Prod\\worse-elytra\\forge\\bin\\main"
       },
       "console": "internalConsole",
       "shortenCommandLine": "none"

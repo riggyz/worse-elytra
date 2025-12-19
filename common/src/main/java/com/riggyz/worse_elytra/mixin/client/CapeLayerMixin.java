@@ -1,0 +1,45 @@
+package com.riggyz.worse_elytra.mixin.client;
+
+import com.riggyz.worse_elytra.item.CustomElytraItem;
+
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.layers.CapeLayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+
+@Mixin(CapeLayer.class)
+public class CapeLayerMixin {
+
+    /**
+     * Prevents the cape from rendering when the player is wearing a CustomElytraItem.
+     * This mimics vanilla behavior where capes don't render when wearing an elytra
+     * (the cape texture is applied to the elytra wings instead).
+     */
+    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/player/AbstractClientPlayer;FFFFFF)V", at = @At("HEAD"), cancellable = true)
+    private void worse_elytra$preventCapeWithCustomElytra(
+            PoseStack poseStack,
+            MultiBufferSource buffer,
+            int packedLight,
+            AbstractClientPlayer player,
+            float limbSwing,
+            float limbSwingAmount,
+            float partialTick,
+            float ageInTicks,
+            float netHeadYaw,
+            float headPitch,
+            CallbackInfo ci) {
+        ItemStack chestStack = player.getItemBySlot(EquipmentSlot.CHEST);
+        
+        if (chestStack.getItem() instanceof CustomElytraItem) {
+            // Cancel cape rendering - the cape texture will be on the elytra instead
+            ci.cancel();
+        }
+    }
+}
