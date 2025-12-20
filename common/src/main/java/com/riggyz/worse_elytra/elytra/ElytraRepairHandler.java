@@ -114,7 +114,7 @@ public class ElytraRepairHandler {
         ElytraStateHandler.setState(result, workingState);
         result.setDamageValue(workingDamage);
 
-        return new RepairResult(result, totalMembranesUsed, Math.max(totalXpCost, 39));
+        return new RepairResult(result, totalMembranesUsed, Math.min(totalXpCost, 39));
     }
 
     // ==================== RESULT CLASS ====================

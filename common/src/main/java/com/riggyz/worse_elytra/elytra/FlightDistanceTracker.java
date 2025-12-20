@@ -49,10 +49,10 @@ public class FlightDistanceTracker {
         FlightData data = FLIGHT_DATA.get(playerId);
 
         ItemStack elytra = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (!ElytraStateHandler.isCustomElytra(elytra)) {
-            FLIGHT_DATA.remove(playerId);
-            return;
-        }
+        // if (!ElytraStateHandler.isCustomElytra(elytra)) {
+        // FLIGHT_DATA.remove(playerId);
+        // return;
+        // }
 
         ElytraState state = ElytraStateHandler.getStateFromStack(elytra);
 
@@ -86,6 +86,10 @@ public class FlightDistanceTracker {
                 displayFlightHUD(player, elytra, state, data);
             }
 
+        }
+        // TODO: very hacky fix, need to check more states
+        else if (data != null && data.wasFlying && !player.onGround()) {
+            // do nothing
         } else {
             FLIGHT_DATA.remove(playerId);
         }

@@ -16,7 +16,7 @@ public class FabricCustomElytraItem extends CustomElytraItem implements FabricEl
 
     @Override
     public boolean useCustomElytra(LivingEntity entity, ItemStack chestStack, boolean tickElytra) {
-        if (!isFlyEnabled(chestStack)) {
+        if (!CustomElytraItem.isFlyEnabled(entity, chestStack)) {
             return false;
         }
 

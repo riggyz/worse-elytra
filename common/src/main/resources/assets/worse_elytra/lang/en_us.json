@@ -14,5 +14,10 @@
   "tooltip.worse_elytra.speed_multiplier": "Speed: ",
   "tooltip.worse_elytra.max_flight_distance": "Max Distance: ",
   "tooltip.worse_elytra.cooldown_duration": "Cooldown: ",
-  "message.worse_elytra.flight_exhausted": "Flight exhausted! Elytra on cooldown..."
+  "message.worse_elytra.flight_exhausted": "Flight exhausted! Elytra on cooldown...",
+    
+  "advancements.worse_elytra.degraded_wings.title": "Falling Apart",
+  "advancements.worse_elytra.degraded_wings.description": "Degrade your elytra",
+  "advancements.worse_elytra.fully_broken.title": "Grounded",
+  "advancements.worse_elytra.fully_broken.description": "Break your elytra completely"
 }

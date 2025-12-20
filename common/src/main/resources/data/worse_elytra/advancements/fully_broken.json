@@ -1,0 +1,27 @@
+{
+    "display": {
+        "icon": {
+            "item": "worse_elytra:custom_elytra",
+            "nbt": "{elytra_state:\"BROKEN\"}"
+        },
+        "title": {
+            "translate": "advancements.worse_elytra.fully_broken.title"
+        },
+        "description": {
+            "translate": "advancements.worse_elytra.fully_broken.description"
+        },
+        "frame": "challenge",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "hidden": true
+    },
+    "parent": "worse_elytra:degraded_wings",
+    "criteria": {
+        "broken_elytra": {
+            "trigger": "worse_elytra:elytra_degraded",
+            "conditions": {
+                "state": "broken"
+            }
+        }
+    }
+}

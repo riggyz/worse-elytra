@@ -4,9 +4,11 @@ import com.riggyz.worse_elytra.client.ElytraParticleEffects;
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
 import com.riggyz.worse_elytra.Constants;
+import com.riggyz.worse_elytra.advancement.AdvancementTriggers;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -102,6 +104,11 @@ public class CustomElytraItem extends ElytraItem {
 
             // Spawn big puff of smoke for degradation
             ElytraParticleEffects.spawnDegradationPuff(player);
+
+            if (player instanceof ServerPlayer serverPlayer) {
+                ElytraState newState = ElytraStateHandler.getStateFromStack(elytra);
+                AdvancementTriggers.ELYTRA_DEGRADED.trigger(serverPlayer, newState);
+            }
 
             if (player.isFallFlying()) {
                 player.stopFallFlying();

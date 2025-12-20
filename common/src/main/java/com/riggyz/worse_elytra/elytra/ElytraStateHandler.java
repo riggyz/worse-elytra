@@ -11,16 +11,16 @@ public class ElytraStateHandler {
 
     // ==================== ELYTRA STATE ENUM ====================
     public enum ElytraState {
-        NORMAL(1.00, 500.0, 100, 1.00, 0),
-        RUFFLED(0.98, 400.0, 140, 0.75, 4),
-        WITHERED(0.95, 300.0, 180, 0.50, 8),
+        NORMAL(1.00, 650.0, 100, 1.00, 0),
+        RUFFLED(0.99, 450.0, 140, 0.75, 4),
+        WITHERED(0.98, 300.0, 180, 0.50, 8),
         BROKEN(1.00, 0.0, 0, 0.00, 16);
 
         public final double dragMultiplier;
         public final double maxDistance;
         public final int baseCooldownTicks;
         public final double durabilityMultiplier;
-        public final int repairCost; // Cost in phantom membranes (or whatever repair item)
+        public final int repairCost;
 
         ElytraState(double dragMultiplier, double maxDistance, int baseCooldownTicks,
                 double durabilityMultiplier, int repairCost) {

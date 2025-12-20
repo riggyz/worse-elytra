@@ -1,5 +1,6 @@
 package com.riggyz.worse_elytra;
 
+import com.riggyz.worse_elytra.advancement.AdvancementTriggers;
 import com.riggyz.worse_elytra.command.ElytraDebugCommand;
 import com.riggyz.worse_elytra.item.FabricCustomElytraItem;
 
@@ -7,6 +8,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 
@@ -25,6 +27,8 @@ public class WorseElytra implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             ElytraDebugCommand.register(dispatcher);
         });
+
+        CriteriaTriggers.register(AdvancementTriggers.ELYTRA_DEGRADED);
 
         CommonClass.init();
     }

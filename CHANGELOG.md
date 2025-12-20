@@ -5,16 +5,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 ### Added
-- TODO:
+-
 
 ### Fixed
-- TODO:
+-
 
 ### Changed
-- TODO:
+-
 
 ### Removed
-- TODO:
+-
+
+## [0.1.1] - 2025-12-20
+### Added
+- Added two custom advancements
+
+### Fixed
+- Fixed an issue where the mixin definition was incorrectly named
+- Fixed an issue where unbreaking was not being applied correctly
+
+### Changed
+- Rebalanced elytra thanks to player testing
+- TODO: Flight changes applied to the vanilla item
+- TODO: Magic numbers have been moved into a config file
+
+### Removed
+- TODO: Cleaned up the codebase
 
 ## [0.1.0] - 2025-12-15
 ### Added
@@ -33,4 +49,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Cape still rendering with elytra equipped
 
 [unreleased]: https://github.com/riggyz/worse-elytra/compare/v0.1.0...HEAD
+[0.1.1]: https://github.com/riggyz/worse-elytra/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/riggyz/worse-elytra/releases/tag/v0.1.0
