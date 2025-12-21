@@ -161,7 +161,7 @@ public class FlightDistanceTracker {
         ItemStack elytra = player.getItemBySlot(EquipmentSlot.CHEST);
         ElytraState state = ElytraStateHandler.getStateFromStack(elytra);
 
-        if (data == null || !ElytraStateHandler.isCustomElytra(elytra)) {
+        if (data == null || !ElytraStateHandler.isElytra(elytra)) {
             return state.maxDistance;
         }
 

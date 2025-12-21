@@ -1,8 +1,8 @@
 package com.riggyz.worse_elytra.elytra;
 
-import com.riggyz.worse_elytra.item.CustomElytraItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 
 public class ElytraStateHandler {
@@ -211,30 +211,9 @@ public class ElytraStateHandler {
 
     // ==================== FLIGHT CHECKS ====================
 
-    /**
-     * Check if the elytra can be used for flight
-     */
-    public static boolean canFly(Player player, ItemStack elytra) {
-        ElytraState state = getStateFromStack(elytra);
-
-        if (!state.canFly()) {
-            return false;
-        }
-
-        if (isOnCooldown(player, elytra)) {
-            return false;
-        }
-
-        if (!CustomElytraItem.isFlyEnabled(elytra)) {
-            return false;
-        }
-
-        return true;
-    }
-
     // ==================== HELPER METHODS ====================
 
-    public static boolean isCustomElytra(ItemStack stack) {
-        return !stack.isEmpty() && stack.getItem() instanceof CustomElytraItem;
+    public static boolean isElytra(ItemStack stack) {
+        return !stack.isEmpty() && stack.getItem() instanceof ElytraItem;
     }
 }

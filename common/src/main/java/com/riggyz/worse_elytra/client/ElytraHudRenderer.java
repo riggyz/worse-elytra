@@ -3,7 +3,6 @@ package com.riggyz.worse_elytra.client;
 import com.riggyz.worse_elytra.Constants;
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
-import com.riggyz.worse_elytra.item.CustomElytraItem;
 
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.Minecraft;
@@ -11,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 
 public class ElytraHudRenderer {
@@ -35,7 +35,7 @@ public class ElytraHudRenderer {
         }
 
         ItemStack chestStack = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (chestStack.isEmpty() || !(chestStack.getItem() instanceof CustomElytraItem)) {
+        if (chestStack.isEmpty() || !(chestStack.getItem() instanceof ElytraItem)) {
             return;
         }
 

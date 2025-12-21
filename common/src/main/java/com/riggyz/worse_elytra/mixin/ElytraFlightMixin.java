@@ -6,8 +6,10 @@ import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,7 +32,7 @@ public abstract class ElytraFlightMixin {
 
         ItemStack elytra = player.getItemBySlot(EquipmentSlot.CHEST);
 
-        if (!ElytraStateHandler.isCustomElytra(elytra)) {
+        if (!(elytra.getItem() instanceof ElytraItem)) {
             return;
         }
 

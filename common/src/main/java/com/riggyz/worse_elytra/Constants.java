@@ -3,6 +3,10 @@ package com.riggyz.worse_elytra;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Universal constants used all throughout the mod. Defined here so that there
+ * is a single point of modification for magic numbers and strings.
+ */
 public class Constants {
 	public static final String MOD_ID = "worse_elytra";
 	public static final String MOD_NAME = "Worse Elytra";

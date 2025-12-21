@@ -17,6 +17,7 @@ public class ElytraDebugCommand {
     private static final int OP_LEVEL = 2;
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        //  TODO: this should only register if we are in dev
         dispatcher.register(Commands.literal("elytra")
                 // OP-only commands (modify elytra state/durability)
                 .then(Commands.literal("break")
@@ -62,7 +63,7 @@ public class ElytraDebugCommand {
 
         ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
 
-        if (!ElytraStateHandler.isCustomElytra(chestItem)) {
+        if (!ElytraStateHandler.isElytra(chestItem)) {
             source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
             return 0;
         }
@@ -88,7 +89,7 @@ public class ElytraDebugCommand {
 
         ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
 
-        if (!ElytraStateHandler.isCustomElytra(chestItem)) {
+        if (!ElytraStateHandler.isElytra(chestItem)) {
             source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
             return 0;
         }
@@ -107,7 +108,7 @@ public class ElytraDebugCommand {
 
         ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
 
-        if (!ElytraStateHandler.isCustomElytra(chestItem)) {
+        if (!ElytraStateHandler.isElytra(chestItem)) {
             source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
             return 0;
         }
@@ -128,7 +129,7 @@ public class ElytraDebugCommand {
 
         ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
 
-        if (!ElytraStateHandler.isCustomElytra(chestItem)) {
+        if (!ElytraStateHandler.isElytra(chestItem)) {
             source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
             return 0;
         }
@@ -155,7 +156,7 @@ public class ElytraDebugCommand {
 
         ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
 
-        if (!ElytraStateHandler.isCustomElytra(chestItem)) {
+        if (!ElytraStateHandler.isElytra(chestItem)) {
             source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
             return 0;
         }
@@ -174,7 +175,7 @@ public class ElytraDebugCommand {
 
         ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
 
-        if (!ElytraStateHandler.isCustomElytra(chestItem)) {
+        if (!ElytraStateHandler.isElytra(chestItem)) {
             source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
             return 0;
         }

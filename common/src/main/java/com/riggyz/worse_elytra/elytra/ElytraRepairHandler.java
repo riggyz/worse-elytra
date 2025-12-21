@@ -1,7 +1,8 @@
 package com.riggyz.worse_elytra.elytra;
 
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
-import com.riggyz.worse_elytra.item.CustomElytraItem;
+
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -29,7 +30,7 @@ public class ElytraRepairHandler {
     // ==================== PUBLIC API ====================
 
     public static boolean canHandle(ItemStack left, ItemStack right) {
-        return left.getItem() instanceof CustomElytraItem
+        return left.getItem() instanceof ElytraItem
                 && !right.isEmpty()
                 && right.is(Items.PHANTOM_MEMBRANE);
     }

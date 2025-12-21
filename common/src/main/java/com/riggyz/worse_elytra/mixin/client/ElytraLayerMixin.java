@@ -4,7 +4,6 @@ import com.riggyz.worse_elytra.Constants;
 import com.riggyz.worse_elytra.client.render.ElytraMaskTextureManager;
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
-import com.riggyz.worse_elytra.item.CustomElytraItem;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -22,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -64,7 +64,7 @@ public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityM
             CallbackInfo ci) {
         ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
 
-        if (!(chestStack.getItem() instanceof CustomElytraItem)) {
+        if (!(chestStack.getItem() instanceof ElytraItem)) {
             return;
         }
 

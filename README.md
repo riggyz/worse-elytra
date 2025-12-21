@@ -9,7 +9,6 @@ Elytras as they are in vanilla have a problem for modded transportation - they a
 ## TODOs 
 This is a list of immediate items I am trying to take care of:
 
-TODO: remove deprecated code and clean up the file structure
 TODO: test with cape textures + curios
 
 ## Acknowledgements
