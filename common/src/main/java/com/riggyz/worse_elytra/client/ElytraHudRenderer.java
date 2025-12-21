@@ -13,8 +13,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 
+/**
+ * TODO: this javadoc needs to be completed
+ * 
+ */
 public class ElytraHudRenderer {
-    public static final ResourceLocation HUD_TEXTURE = new ResourceLocation(Constants.MOD_ID,
+    private static final ResourceLocation HUD_TEXTURE = new ResourceLocation(Constants.MOD_ID,
             "textures/gui/elytra_hud.png");
 
     private static final int SPRITE_SIZE = 18;
@@ -26,6 +30,10 @@ public class ElytraHudRenderer {
     private static final int HOTBAR_WIDTH = 182;
     private static final int HOTBAR_OFFSET_Y = 22;
 
+    /**
+     * TODO: this javadoc needs to be completed
+     * 
+     */
     public static void render(GuiGraphics graphics, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;

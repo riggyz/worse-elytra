@@ -5,6 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 
+// TODO: trim the fat out of this class
 public class ElytraStateHandler {
 
     private static final String STATE_KEY = "elytra_state";
@@ -60,18 +61,18 @@ public class ElytraStateHandler {
             return (int) (baseDurability * durabilityMultiplier);
         }
 
-        /**
-         * Get the total repair cost to fully restore to NORMAL.
-         */
-        public int getTotalRepairCost() {
-            int total = 0;
-            ElytraState current = this;
-            while (current != NORMAL) {
-                total += current.repairCost;
-                current = current.repair();
-            }
-            return total;
-        }
+        // /**
+        //  * Get the total repair cost to fully restore to NORMAL.
+        //  */
+        // public int getTotalRepairCost() {
+        //     int total = 0;
+        //     ElytraState current = this;
+        //     while (current != NORMAL) {
+        //         total += current.repairCost;
+        //         current = current.repair();
+        //     }
+        //     return total;
+        // }
     }
 
     /**
@@ -82,9 +83,9 @@ public class ElytraStateHandler {
         player.getCooldowns().addCooldown(elytra.getItem(), state.baseCooldownTicks);
     }
 
-    public static float getRemainingCooldown(Player player, ItemStack elytra) {
-        return player.getCooldowns().getCooldownPercent(elytra.getItem(), 0.0f);
-    }
+    // public static float getRemainingCooldown(Player player, ItemStack elytra) {
+    //     return player.getCooldowns().getCooldownPercent(elytra.getItem(), 0.0f);
+    // }
 
     public static boolean isOnCooldown(Player player, ItemStack elytra) {
         return player.getCooldowns().isOnCooldown(elytra.getItem());
@@ -151,23 +152,6 @@ public class ElytraStateHandler {
     // ==================== REPAIR ====================
 
     /**
-     * Repair the elytra by one state level.
-     * Returns true if repair was successful.
-     */
-    public static boolean repairOneLevel(ItemStack elytra) {
-        ElytraState currentState = getStateFromStack(elytra);
-
-        if (currentState == ElytraState.NORMAL) {
-            return false;
-        }
-
-        ElytraState repairedState = currentState.repair();
-        setState(elytra, repairedState);
-
-        return true;
-    }
-
-    /**
      * Fully repair the elytra to NORMAL state
      */
     public static void fullyRepair(ItemStack elytra) {
@@ -183,33 +167,6 @@ public class ElytraStateHandler {
     public static void setCooldown(Player player, ItemStack elytra, int ticks) {
         player.getCooldowns().addCooldown(elytra.getItem(), ticks);
     }
-
-    /**
-     * Get remaining cooldown as a percentage (0.0 to 1.0)
-     */
-    public static float getCooldownPercent(Player player, ItemStack elytra) {
-        return player.getCooldowns().getCooldownPercent(elytra.getItem(), 0.0f);
-    }
-
-    // ==================== STAT GETTERS ====================
-
-    // public static float getMultiplier(Player player, ItemStack elytra) {
-    // return getStateFromStack(elytra).multiplier;
-    // }
-
-    // public static float getMaxSpeed(Player player, ItemStack elytra) {
-    // return getStateFromStack(elytra).maxSpeed;
-    // }
-
-    public static double getMaxFlightDistance(Player player, ItemStack elytra) {
-        return getStateFromStack(elytra).maxDistance;
-    }
-
-    public static int getCooldownDuration(ItemStack elytra) {
-        return getStateFromStack(elytra).baseCooldownTicks;
-    }
-
-    // ==================== FLIGHT CHECKS ====================
 
     // ==================== HELPER METHODS ====================
 

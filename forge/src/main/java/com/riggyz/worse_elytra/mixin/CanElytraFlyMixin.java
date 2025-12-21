@@ -1,6 +1,6 @@
 package com.riggyz.worse_elytra.mixin;
 
-import com.riggyz.worse_elytra.mechanics.CustomElytra;
+import com.riggyz.worse_elytra.elytra.CustomMechanics;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ElytraItem;
@@ -33,7 +33,7 @@ public class CanElytraFlyMixin {
     @Inject(method = "canElytraFly", at = @At("HEAD"), cancellable = true, remap = false)
     private void worse_elytra$customFlightCheck(ItemStack stack, LivingEntity entity,
             CallbackInfoReturnable<Boolean> cir) {
-        boolean canFly = CustomElytra.isFlyEnabled(entity, stack);
+        boolean canFly = CustomMechanics.isFlyEnabled(entity, stack);
         cir.setReturnValue(canFly);
     }
 }

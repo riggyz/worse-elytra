@@ -1,6 +1,6 @@
 package com.riggyz.worse_elytra.mixin;
 
-import com.riggyz.worse_elytra.mechanics.CustomElytra;
+import com.riggyz.worse_elytra.elytra.CustomMechanics;
 
 import net.fabricmc.fabric.api.entity.event.v1.FabricElytraItem;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 /**
  * The Fabric-specific mixin that takes care of the elytra flight check.
  *
- * @see CustomElytra
+ * @see CustomMechanics
  * @see FabricElytraItem
  */
 @Mixin(ElytraItem.class)
@@ -30,7 +30,7 @@ public abstract class CanElytraFlyMixin implements FabricElytraItem {
      */
     @Override
     public boolean useCustomElytra(LivingEntity entity, ItemStack chestStack, boolean tickElytra) {
-        if (!CustomElytra.isFlyEnabled(entity, chestStack)) {
+        if (!CustomMechanics.isFlyEnabled(entity, chestStack)) {
             return false;
         }
 

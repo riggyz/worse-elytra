@@ -1,24 +1,35 @@
-package com.riggyz.worse_elytra.elytra;
+package com.riggyz.worse_elytra.mixin;
 
-import com.riggyz.worse_elytra.client.ElytraParticleEffects;
+import com.riggyz.worse_elytra.elytra.CustomMechanics;
+import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-public class FlightDistanceTracker {
+/**
+ * Mixin class that targets the Players. We target players specifically because
+ * we need to check them for flight distance. Other entities can wear the
+ * elytra, but only the player should be nerfed.
+ */
+@Mixin(Player.class)
+public abstract class PlayerFlightMixin {
 
     private static final Map<UUID, FlightData> FLIGHT_DATA = new WeakHashMap<>();
+    private static final Map<UUID, Boolean> HUD_ENABLED = new WeakHashMap<>();
 
     public static class FlightData {
         public Vec3 lastPosition;
@@ -32,18 +43,27 @@ public class FlightDistanceTracker {
         }
     }
 
-    private static final Map<UUID, Boolean> DETAILED_HUD = new WeakHashMap<>();
-
-    public static void toggleDetailedHUD(Player player) {
+    public static void toggleDebugHUD(Player player) {
         UUID id = player.getUUID();
-        boolean current = DETAILED_HUD.getOrDefault(id, false);
-        DETAILED_HUD.put(id, !current);
+        boolean current = HUD_ENABLED.getOrDefault(id, false);
+        HUD_ENABLED.put(id, !current);
     }
 
     /**
-     * Called every tick for each player - tracks flight distance
+     * Injected mehtod, just serves as a wrapper to call flight tracker on the
+     * server every tick
+     * 
+     * @see FlightDistanceTracker
+     * 
+     * @param ci mixin callback handler
      */
-    public static void tick(Player player) {
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void worse_elytra$onPlayerTick(CallbackInfo ci) {
+        Player player = (Player) (Object) this;
+        if (player.level().isClientSide()) {
+            return;
+        }
+
         UUID playerId = player.getUUID();
         boolean isFlying = player.isFallFlying();
         FlightData data = FLIGHT_DATA.get(playerId);
@@ -57,6 +77,7 @@ public class FlightDistanceTracker {
         ElytraState state = ElytraStateHandler.getStateFromStack(elytra);
 
         // Can't fly if broken
+        // FIXME: wtf is this for????
         if (!state.canFly() && isFlying) {
             player.stopFallFlying();
             return;
@@ -77,13 +98,15 @@ public class FlightDistanceTracker {
                 // Check if exceeded max distance
                 double maxDistance = state.maxDistance;
                 if (data.totalDistance >= maxDistance) {
-                    kickOutOfFlight(player, elytra, data);
+                    data.wasFlying = false;
+                    data.totalDistance = 0;
+                    CustomMechanics.kickOutOfFlight(player, elytra);
                     return;
                 }
             }
 
-            if (DETAILED_HUD.getOrDefault(playerId, false)) {
-                displayFlightHUD(player, elytra, state, data);
+            if (HUD_ENABLED.getOrDefault(playerId, false)) {
+                displayDebugHUD(player, elytra, state, data);
             }
 
         }
@@ -96,9 +119,15 @@ public class FlightDistanceTracker {
     }
 
     /**
-     * Display flight speed and stats on the action bar
+     * Displays a server side calculated debug HUD so that movement vectors can be
+     * seen. Is only for testing.
+     * 
+     * @param player the player to render to
+     * @param elytra the item being used to fly
+     * @param state  the in tick state of the item
+     * @param data   the in-tick flight data to use to render
      */
-    private static void displayFlightHUD(Player player, ItemStack elytra, ElytraState state, FlightData data) {
+    private static void displayDebugHUD(Player player, ItemStack elytra, ElytraState state, FlightData data) {
         Vec3 velocity = player.getDeltaMovement();
 
         // Calculate speeds
@@ -132,44 +161,5 @@ public class FlightDistanceTracker {
                 .append(Component.literal("/" + (int) state.maxDistance).withStyle(ChatFormatting.GRAY));
 
         player.displayClientMessage(hud, true);
-    }
-
-    /**
-     * Force the player out of flight mode
-     */
-    private static void kickOutOfFlight(Player player, ItemStack elytra, FlightData data) {
-        player.stopFallFlying();
-
-        ElytraStateHandler.setCooldown(player, elytra);
-        ElytraParticleEffects.spawnExhaustPuff(player);
-
-        player.level().playSound(
-                null,
-                player.getX(), player.getY(), player.getZ(),
-                SoundEvents.SHULKER_BOX_CLOSE,
-                SoundSource.PLAYERS,
-                1.0f, 0.5f);
-
-        data.wasFlying = false;
-        data.totalDistance = 0;
-    }
-
-    // ==================== PUBLIC GETTERS ====================
-
-    public static double getRemainingDistance(Player player) {
-        FlightData data = FLIGHT_DATA.get(player.getUUID());
-        ItemStack elytra = player.getItemBySlot(EquipmentSlot.CHEST);
-        ElytraState state = ElytraStateHandler.getStateFromStack(elytra);
-
-        if (data == null || !ElytraStateHandler.isElytra(elytra)) {
-            return state.maxDistance;
-        }
-
-        return Math.max(0, state.maxDistance - data.totalDistance);
-    }
-
-    public static double getDistanceFlown(Player player) {
-        FlightData data = FLIGHT_DATA.get(player.getUUID());
-        return data != null ? data.totalDistance : 0;
     }
 }

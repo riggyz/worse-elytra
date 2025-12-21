@@ -6,7 +6,7 @@ import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import javax.annotation.Nullable;
+// TODO: trim the fat out of this class
 
 /**
  * Centralized repair logic for CustomElytraItem.
@@ -35,7 +35,6 @@ public class ElytraRepairHandler {
                 && right.is(Items.PHANTOM_MEMBRANE);
     }
 
-    @Nullable
     public static RepairResult calculateRepair(ItemStack elytra, ItemStack material) {
         if (!canHandle(elytra, material)) {
             return null;

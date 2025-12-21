@@ -1,8 +1,8 @@
 package com.riggyz.worse_elytra.mixin;
 
+import com.riggyz.worse_elytra.elytra.CustomMechanics;
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
-import com.riggyz.worse_elytra.mechanics.CustomElytra;
 import com.riggyz.worse_elytra.Constants;
 
 import net.minecraft.network.chat.Component;
@@ -21,6 +21,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.At;
 
+/**
+ * This is the set of mixins that are needed to modify a specific elytra item.
+ * It's general counterpart is ElytraItemMxin.
+ * 
+ * @see ElytraItemMixin
+ */
 @Mixin(ItemStack.class)
 public abstract class ElytraItemStackMixin {
 
@@ -30,7 +36,9 @@ public abstract class ElytraItemStackMixin {
     // NOTE: The mixins that change the damage mechanics
 
     /**
-     * TODO: this javadoc needs to be completed
+     * Mixin that is required in order to make sure that the elytra has the correct
+     * max damage. If this is not set then things get funky with halth bar
+     * rendering.
      * 
      * @param cir some mixin magic
      */
@@ -67,7 +75,7 @@ public abstract class ElytraItemStackMixin {
 
         // Cancel the break and handle degradation instead
         ci.cancel();
-        CustomElytra.handleDegradation(player, self);
+        CustomMechanics.handleDegradation(player, self);
     }
 
     // NOTE: The mixins that change the visual item mechanics
@@ -100,6 +108,15 @@ public abstract class ElytraItemStackMixin {
         cir.setReturnValue(Math.round(13.0f - ((float) damage * 13.0f / (float) maxDamage)));
     }
 
+    /**
+     * Mixin that adds the damage level prefix to the item name.
+     * 
+     * By doing it this way the prefix will apply to even a renamed item, so it
+     * should be viewed as live appending the state rather than muatating the item
+     * name.
+     *
+     * @param cir some mixin magic
+     */
     @Inject(method = "getHoverName", at = @At("RETURN"), cancellable = true)
     private void worse_elytra$addStatePrefix(CallbackInfoReturnable<Component> cir) {
         if (!(this.getItem() instanceof ElytraItem)) {

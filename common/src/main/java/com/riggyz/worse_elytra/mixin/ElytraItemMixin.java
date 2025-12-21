@@ -19,8 +19,22 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.At;
 
+/**
+ * Mixin class that targets the Item class. This needs to be targeted because
+ * the item defined the hovertext, while ItemStack defines the name text.
+ */
 @Mixin(Item.class)
 public class ElytraItemMixin {
+
+    /**
+     * Injected method that adds a row of lore text to the elytra item.
+     * 
+     * @param stack   the item to check against
+     * @param level
+     * @param tooltip the tooltip to modify
+     * @param flag
+     * @param ci      the mxixin callback handler
+     */
     @Inject(method = "appendHoverText", at = @At("TAIL"))
     private void worse_elytra$addElytraStateLore(
             ItemStack stack,

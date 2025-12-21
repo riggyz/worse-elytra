@@ -2,8 +2,7 @@ package com.riggyz.worse_elytra.command;
 
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
 import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
-import com.riggyz.worse_elytra.elytra.FlightDistanceTracker;
-
+import com.riggyz.worse_elytra.mixin.PlayerFlightMixin;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -17,7 +16,7 @@ public class ElytraDebugCommand {
     private static final int OP_LEVEL = 2;
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        //  TODO: this should only register if we are in dev
+        // TODO: this should only register if we are in dev
         dispatcher.register(Commands.literal("elytra")
                 // OP-only commands (modify elytra state/durability)
                 .then(Commands.literal("break")
@@ -26,9 +25,6 @@ public class ElytraDebugCommand {
                 .then(Commands.literal("repair")
                         .requires(source -> source.hasPermission(OP_LEVEL))
                         .executes(context -> repairFull(context.getSource())))
-                .then(Commands.literal("cooldown")
-                        .requires(source -> source.hasPermission(OP_LEVEL))
-                        .executes(context -> triggerCooldown(context.getSource())))
                 .then(Commands.literal("degrade")
                         .requires(source -> source.hasPermission(OP_LEVEL))
                         .executes(context -> forceDegradation(context.getSource())))
@@ -43,12 +39,10 @@ public class ElytraDebugCommand {
                         .then(Commands.literal("broken")
                                 .executes(context -> setElytraState(context.getSource(), ElytraState.BROKEN))))
                 // Available to all players
-                .then(Commands.literal("info")
-                        .executes(context -> showInfo(context.getSource())))
                 .then(Commands.literal("hud")
                         .executes(context -> {
                             if (context.getSource().getEntity() instanceof Player player) {
-                                FlightDistanceTracker.toggleDetailedHUD(player);
+                                PlayerFlightMixin.toggleDebugHUD(player);
                                 return 1;
                             }
                             return 0;
@@ -100,27 +94,6 @@ public class ElytraDebugCommand {
         return 1;
     }
 
-    private static int triggerCooldown(CommandSourceStack source) {
-        if (!(source.getEntity() instanceof Player player)) {
-            source.sendFailure(Component.literal("Must be run by a player"));
-            return 0;
-        }
-
-        ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
-
-        if (!ElytraStateHandler.isElytra(chestItem)) {
-            source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
-            return 0;
-        }
-
-        ElytraStateHandler.setCooldown(player, chestItem);
-        int ticks = ElytraStateHandler.getCooldownDuration(chestItem);
-        source.sendSuccess(() -> Component.literal(
-                String.format("Triggered %. 1f second cooldown", ticks / 20.0)), false);
-
-        return 1;
-    }
-
     private static int forceDegradation(CommandSourceStack source) {
         if (!(source.getEntity() instanceof Player player)) {
             source.sendFailure(Component.literal("Must be run by a player"));
@@ -163,36 +136,6 @@ public class ElytraDebugCommand {
 
         ElytraStateHandler.setState(chestItem, state);
         source.sendSuccess(() -> Component.literal("Set elytra state to " + state.name()), false);
-
-        return 1;
-    }
-
-    private static int showInfo(CommandSourceStack source) {
-        if (!(source.getEntity() instanceof Player player)) {
-            source.sendFailure(Component.literal("Must be run by a player"));
-            return 0;
-        }
-
-        ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
-
-        if (!ElytraStateHandler.isElytra(chestItem)) {
-            source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
-            return 0;
-        }
-
-        ElytraState state = ElytraStateHandler.getStateFromStack(chestItem);
-        int damage = chestItem.getDamageValue();
-        int maxDamage = chestItem.getMaxDamage();
-        boolean onCooldown = ElytraStateHandler.isOnCooldown(player, chestItem);
-
-        source.sendSuccess(() -> Component.literal("=== Custom Elytra Info ==="), false);
-        source.sendSuccess(() -> Component.literal("State: " + state.name()), false);
-        source.sendSuccess(() -> Component.literal("Can Fly: " + state.canFly()), false);
-        source.sendSuccess(() -> Component.literal("Durability: " + (maxDamage - damage) + "/" + maxDamage), false);
-        source.sendSuccess(() -> Component.literal("Max Distance: " + (int) state.maxDistance + " blocks"), false);
-        source.sendSuccess(() -> Component.literal("Cooldown Duration: " + (state.baseCooldownTicks / 20.0) + "s"),
-                false);
-        source.sendSuccess(() -> Component.literal("On Cooldown: " + onCooldown), false);
 
         return 1;
     }
