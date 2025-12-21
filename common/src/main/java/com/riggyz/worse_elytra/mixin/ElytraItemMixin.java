@@ -1,8 +1,8 @@
 package com.riggyz.worse_elytra.mixin;
 
 import com.riggyz.worse_elytra.Constants;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
+import com.riggyz.worse_elytra.elytra.StateHandler;
+import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -48,7 +48,7 @@ public class ElytraItemMixin {
             return;
         }
 
-        ElytraState state = ElytraStateHandler.getStateFromStack(stack);
+        ElytraState state = StateHandler.getStateFromStack(stack);
 
         String loreKey = switch (state) {
             case NORMAL -> Constants.ELYTRA_NORMAL_LORE_KEY;

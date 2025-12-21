@@ -1,9 +1,9 @@
 package com.riggyz.worse_elytra;
 
 import com.riggyz.worse_elytra.advancement.AdvancementTriggers;
-import com.riggyz.worse_elytra.command.ElytraDebugCommand;
-import com.riggyz.worse_elytra.elytra.ElytraRepairHandler;
-import com.riggyz.worse_elytra.elytra.ElytraRepairHandler.RepairResult;
+import com.riggyz.worse_elytra.elytra.DebugCommand;
+import com.riggyz.worse_elytra.elytra.CustomMechanics;
+import com.riggyz.worse_elytra.elytra.CustomMechanics.RepairResult;
 
 import net.minecraft.advancements.CriteriaTriggers;
 
@@ -24,7 +24,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(Constants.MOD_ID)
 public class WorseElytra {
 
+    /** Forge specific loading bus */
     public static IEventBus setupEventBus;
+    /** Forge specific in-game bus */
     public static IEventBus runtimeEventBus;
 
     /**
@@ -35,7 +37,7 @@ public class WorseElytra {
         setupEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         runtimeEventBus = MinecraftForge.EVENT_BUS;
 
-        runtimeEventBus.addListener(this::advancementSetup);
+        setupEventBus.addListener(this::advancementSetup);
 
         runtimeEventBus.addListener(this::onRegisterCommands);
         runtimeEventBus.addListener(this::onAnvilUpdate);
@@ -66,7 +68,7 @@ public class WorseElytra {
      * @param event the game event to ingest
      */
     private void onRegisterCommands(RegisterCommandsEvent event) {
-        ElytraDebugCommand.register(event.getDispatcher());
+        DebugCommand.register(event.getDispatcher());
     }
 
     /**
@@ -77,7 +79,7 @@ public class WorseElytra {
      * @param event the game event to ingest
      */
     private void onAnvilUpdate(AnvilUpdateEvent event) {
-        RepairResult result = ElytraRepairHandler.calculateRepair(
+        RepairResult result = CustomMechanics.calculateRepair(
                 event.getLeft(),
                 event.getRight());
 

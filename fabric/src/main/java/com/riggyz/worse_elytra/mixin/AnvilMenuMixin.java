@@ -1,7 +1,7 @@
 package com.riggyz.worse_elytra.mixin;
 
-import com.riggyz.worse_elytra.elytra.ElytraRepairHandler;
-import com.riggyz.worse_elytra.elytra.ElytraRepairHandler.RepairResult;
+import com.riggyz.worse_elytra.elytra.CustomMechanics;
+import com.riggyz.worse_elytra.elytra.CustomMechanics.RepairResult;
 
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * The Fabric-specific mixin that takes care of the anvil repair logic.
  *
- * @see ElytraRepairHandler
+ * @see CustomMechanics
  * @see AnvilMenu
  */
 @Mixin(AnvilMenu.class)
@@ -59,7 +59,7 @@ public abstract class AnvilMenuMixin extends ItemCombinerMenu {
         ItemStack left = this.inputSlots.getItem(0);
         ItemStack right = this.inputSlots.getItem(1);
 
-        RepairResult result = ElytraRepairHandler.calculateRepair(left, right);
+        RepairResult result = CustomMechanics.calculateRepair(left, right);
 
         if (result != null) {
             this.resultSlots.setItem(0, result.output);

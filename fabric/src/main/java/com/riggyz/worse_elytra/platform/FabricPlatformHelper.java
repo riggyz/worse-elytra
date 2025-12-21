@@ -4,6 +4,11 @@ import com.riggyz.worse_elytra.platform.services.IPlatformHelper;
 
 import net.fabricmc.loader.api.FabricLoader;
 
+/**
+ * Fabric specific implementation of the platform helper
+ * 
+ * @see IPlatformHelper
+ */
 public class FabricPlatformHelper implements IPlatformHelper {
 
     @Override

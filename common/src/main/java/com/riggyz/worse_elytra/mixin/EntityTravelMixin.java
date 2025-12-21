@@ -1,7 +1,7 @@
 package com.riggyz.worse_elytra.mixin;
 
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
+import com.riggyz.worse_elytra.elytra.StateHandler;
+import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,7 +43,7 @@ public abstract class EntityTravelMixin {
             return;
         }
 
-        ElytraState state = ElytraStateHandler.getStateFromStack(elytra);
+        ElytraState state = StateHandler.getStateFromStack(elytra);
         if (state.dragMultiplier >= 1.0) {
             return;
         }

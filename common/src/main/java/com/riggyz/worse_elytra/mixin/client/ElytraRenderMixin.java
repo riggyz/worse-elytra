@@ -2,8 +2,8 @@ package com.riggyz.worse_elytra.mixin.client;
 
 import com.riggyz.worse_elytra.Constants;
 import com.riggyz.worse_elytra.client.ElytraMaskManager;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
+import com.riggyz.worse_elytra.elytra.StateHandler;
+import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -36,7 +36,7 @@ public abstract class ElytraRenderMixin<T extends LivingEntity, M extends Entity
      * Mandatory function so that we can overwrite the elytra rendering code with
      * this mixin.
      * 
-     * @param parent
+     * @param parent no idea what this is for
      */
     public ElytraRenderMixin(RenderLayerParent<T, M> parent) {
         super(parent);
@@ -74,7 +74,7 @@ public abstract class ElytraRenderMixin<T extends LivingEntity, M extends Entity
 
         ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
         if (chestStack.getItem() instanceof ElytraItem) {
-            ElytraState state = ElytraStateHandler.getStateFromStack(chestStack);
+            ElytraState state = StateHandler.getStateFromStack(chestStack);
 
             // Apply mask when broken
             if (state == ElytraState.BROKEN) {

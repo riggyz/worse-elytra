@@ -1,8 +1,8 @@
 package com.riggyz.worse_elytra.client;
 
 import com.riggyz.worse_elytra.Constants;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
+import com.riggyz.worse_elytra.elytra.StateHandler;
+import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.Minecraft;
@@ -14,8 +14,8 @@ import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * TODO: this javadoc needs to be completed
- * 
+ * Wrapper class that takes care of all HUD rendering pertaining to elytra.
+ * Currently only implements a cooldown icon like the attack indicator.
  */
 public class ElytraHudRenderer {
     private static final ResourceLocation HUD_TEXTURE = new ResourceLocation(Constants.MOD_ID,
@@ -31,8 +31,10 @@ public class ElytraHudRenderer {
     private static final int HOTBAR_OFFSET_Y = 22;
 
     /**
-     * TODO: this javadoc needs to be completed
+     * Render the cooldown indicator for an elytra if applicable.
      * 
+     * @param graphics the gui to render to
+     * @param partialTick how far through the given tick the function is called
      */
     public static void render(GuiGraphics graphics, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
@@ -51,8 +53,8 @@ public class ElytraHudRenderer {
             return;
         }
 
-        ElytraState state = ElytraStateHandler.getStateFromStack(chestStack);
-        if (!ElytraStateHandler.isOnCooldown(player, chestStack)) {
+        ElytraState state = StateHandler.getStateFromStack(chestStack);
+        if (!StateHandler.isOnCooldown(player, chestStack)) {
             return;
         }
 
@@ -74,7 +76,7 @@ public class ElytraHudRenderer {
 
     private static void renderAttackIndicatorStyle(GuiGraphics graphics, int x, int y,
             ElytraState state, float cooldownPercent) {
-        int stateIndex = getStateIndex(state);
+        int stateIndex = state.getIndex();
         int u = stateIndex * SPRITE_SIZE;
         float fillPercent = 1.0f - cooldownPercent;
 
@@ -105,14 +107,5 @@ public class ElytraHudRenderer {
                         TEXTURE_WIDTH, TEXTURE_HEIGHT);
             }
         }
-    }
-
-    private static int getStateIndex(ElytraState state) {
-        return switch (state) {
-            case NORMAL -> 0;
-            case RUFFLED -> 1;
-            case WITHERED -> 2;
-            case BROKEN -> 3;
-        };
     }
 }

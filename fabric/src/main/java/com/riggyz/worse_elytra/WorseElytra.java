@@ -1,7 +1,7 @@
 package com.riggyz.worse_elytra;
 
 import com.riggyz.worse_elytra.advancement.AdvancementTriggers;
-import com.riggyz.worse_elytra.command.ElytraDebugCommand;
+import com.riggyz.worse_elytra.elytra.DebugCommand;
 
 import net.minecraft.advancements.CriteriaTriggers;
 
@@ -23,7 +23,7 @@ public class WorseElytra implements ModInitializer {
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            ElytraDebugCommand.register(dispatcher);
+            DebugCommand.register(dispatcher);
         });
 
         CriteriaTriggers.register(AdvancementTriggers.ELYTRA_DEGRADED);

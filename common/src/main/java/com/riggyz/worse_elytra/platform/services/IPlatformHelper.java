@@ -1,5 +1,8 @@
 package com.riggyz.worse_elytra.platform.services;
 
+/**
+ * Generic platform interface for functions that can be used to get metadata.
+ */
 public interface IPlatformHelper {
 
     /**

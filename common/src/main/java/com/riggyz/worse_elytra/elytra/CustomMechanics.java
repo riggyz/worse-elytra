@@ -1,7 +1,8 @@
 package com.riggyz.worse_elytra.elytra;
 
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
+import com.riggyz.worse_elytra.Constants;
 import com.riggyz.worse_elytra.advancement.AdvancementTriggers;
+import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -11,7 +12,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 /**
@@ -19,6 +22,32 @@ import net.minecraft.world.level.Level;
  * for mechanics that are needed either in common or in a specific modloader.
  */
 public class CustomMechanics {
+
+    /**
+     * Result of a repair calculation. USed so that all expected return values can
+     * be wrapped and provided.
+     */
+    public static class RepairResult {
+        /** Result of the repair calc */
+        public final ItemStack output;
+        /** Count of how many materials should be used */
+        public final int materialsUsed;
+        /** Calculated XP cost */
+        public final int xpCost;
+
+        /**
+         * Public constructor for the RepairResult class.
+         * 
+         * @param output item to use as a result
+         * @param materialsUsed how many materials were used in crafting
+         * @param xpCost how much XP should it cost
+         */
+        public RepairResult(ItemStack output, int materialsUsed, int xpCost) {
+            this.output = output;
+            this.materialsUsed = materialsUsed;
+            this.xpCost = xpCost;
+        }
+    }
 
     // NOTE: vanilla mechanic overrides
 
@@ -40,12 +69,112 @@ public class CustomMechanics {
         int effectiveMax = stack.getMaxDamage();
         boolean hasEnoughDurability = effectiveMax > 0 && stack.getDamageValue() < effectiveMax;
         boolean isOnCooldown = false;
+        ElytraState state = StateHandler.getStateFromStack(stack);
 
         if (entity instanceof Player player) {
-            isOnCooldown = ElytraStateHandler.isOnCooldown(player, stack);
+            isOnCooldown = player.getCooldowns().isOnCooldown(stack.getItem());
         }
 
-        return hasEnoughDurability && !isOnCooldown;
+        return hasEnoughDurability && !isOnCooldown && state.allowsFlight();
+    }
+
+    /**
+     * The common implmentation of the custom anvil repair logic. It takes into
+     * account both durabiliy and state of the given elytra, and returns the
+     * expected result.
+     * 
+     * This does not overwrite standard all elytra repair calcs, rather it just
+     * checks for phantom membranes.
+     * 
+     * TODO: this needs to check for other elytras, and the logic needs to be cleaned up
+     * 
+     * @param stack    lefthand side of the anvil items
+     * @param material righthand side of the anvil items
+     * 
+     * @return either null or the calculated RepairResult class
+     */
+    public static RepairResult calculateRepair(ItemStack stack, ItemStack material) {
+        if (!(stack.getItem() instanceof ElytraItem
+                && !material.isEmpty()
+                && material.is(Items.PHANTOM_MEMBRANE))) {
+            return null;
+        }
+
+        ElytraState currentState = StateHandler.getStateFromStack(stack);
+        int currentDamage = stack.getDamageValue();
+        int remainingMaterials = material.getCount();
+
+        // Nothing to repair
+        if (currentState == ElytraState.NORMAL && currentDamage == 0) {
+            return null;
+        }
+
+        // Track totals
+        int totalMembranesUsed = 0;
+        int totalXpCost = 0;
+        ItemStack result = stack.copy();
+        ElytraState workingState = currentState;
+        int workingDamage = currentDamage;
+
+        // Keep repairing/upgrading while we have materials and something to do
+        while (remainingMaterials > 0) {
+            boolean didSomething = false;
+
+            // Step 1: Repair durability if damaged (and not BROKEN)
+            if (workingDamage > 0 && workingState != ElytraState.BROKEN) {
+                int membranesForDurability = Math.min(Constants.DURABILITY_REPAIR_COST, remainingMaterials);
+
+                if (membranesForDurability > 0) {
+                    // Calculate how much durability to restore (proportional)
+                    float repairPercent = (float) membranesForDurability / Constants.DURABILITY_REPAIR_COST;
+                    int durabilityToRestore = (int) (workingDamage * repairPercent);
+
+                    // If using full cost, restore all damage (avoid rounding issues)
+                    if (membranesForDurability >= Constants.DURABILITY_REPAIR_COST) {
+                        durabilityToRestore = workingDamage;
+                    }
+
+                    workingDamage -= durabilityToRestore;
+                    remainingMaterials -= membranesForDurability;
+                    totalMembranesUsed += membranesForDurability;
+                    totalXpCost += membranesForDurability * Constants.XP_PER_DURABILITY_MEMBRANE;
+                    didSomething = true;
+                }
+            }
+
+            // Step 2: If durability is full (or BROKEN), try state upgrade
+            if ((workingDamage == 0 || workingState == ElytraState.BROKEN)
+                    && workingState != ElytraState.NORMAL) {
+
+                int stateUpgradeCost = workingState.repairCost;
+
+                if (remainingMaterials >= stateUpgradeCost) {
+                    workingState = workingState.repair();
+                    workingDamage = 0; // Fresh durability for new state
+
+                    remainingMaterials -= stateUpgradeCost;
+                    totalMembranesUsed += stateUpgradeCost;
+                    totalXpCost += stateUpgradeCost * Constants.XP_PER_UPGRADE_MEMBRANE;
+                    didSomething = true;
+                }
+            }
+
+            // If we couldn't do anything this loop, we're done
+            if (!didSomething) {
+                break;
+            }
+        }
+
+        // If nothing changed, return null
+        if (totalMembranesUsed == 0) {
+            return null;
+        }
+
+        // Apply final state to result
+        StateHandler.setState(result, workingState);
+        result.setDamageValue(workingDamage);
+
+        return new RepairResult(result, totalMembranesUsed, Math.min(totalXpCost, 39));
     }
 
     // NOTE: new mechanic implementations
@@ -58,9 +187,17 @@ public class CustomMechanics {
      * @param stack  the eltra item to degrade
      */
     public static void handleDegradation(Player player, ItemStack stack) {
-        boolean degraded = ElytraStateHandler.onDurabilityDepleted(player, stack);
+        ElytraState currentState = StateHandler.getStateFromStack(stack);
+        boolean canDegrade = currentState != ElytraState.BROKEN;
 
-        if (degraded) {
+        // degrade to next state
+        if (canDegrade) {
+            ElytraState newState = currentState.degrade();
+            int degradationCooldown = currentState.baseCooldownTicks * 2;
+
+            StateHandler.setState(stack, newState);
+            stack.setDamageValue(0);
+            player.getCooldowns().addCooldown(stack.getItem(), degradationCooldown);
             player.level().playSound(
                     null,
                     player.getX(), player.getY(), player.getZ(),
@@ -72,7 +209,6 @@ public class CustomMechanics {
             spawnDegradationPuff(player);
 
             if (player instanceof ServerPlayer serverPlayer) {
-                ElytraState newState = ElytraStateHandler.getStateFromStack(stack);
                 AdvancementTriggers.ELYTRA_DEGRADED.trigger(serverPlayer, newState);
             }
 
@@ -90,15 +226,19 @@ public class CustomMechanics {
      * @param stack  the eltra item to degrade
      */
     public static void kickOutOfFlight(Player player, ItemStack stack) {
-        player.stopFallFlying();
-        ElytraStateHandler.setCooldown(player, stack);
+        ElytraState state = StateHandler.getStateFromStack(stack);
 
+        player.getCooldowns().addCooldown(stack.getItem(), state.baseCooldownTicks);
         player.level().playSound(
                 null,
                 player.getX(), player.getY(), player.getZ(),
                 SoundEvents.SHULKER_BOX_CLOSE,
                 SoundSource.PLAYERS,
                 1.0f, 0.5f);
+
+        if (player.isFallFlying()) {
+            player.stopFallFlying();
+        }
     }
 
     // NOTE: internal helper functions

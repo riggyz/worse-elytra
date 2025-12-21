@@ -1,8 +1,8 @@
 package com.riggyz.worse_elytra;
 
 import com.riggyz.worse_elytra.client.ElytraHudRenderer;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
+import com.riggyz.worse_elytra.elytra.StateHandler;
+import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -41,7 +41,7 @@ public class WorseElytraClient implements ClientModInitializer {
                         return 0.0f;
                     }
 
-                    ElytraState state = ElytraStateHandler.getStateFromStack(stack);
+                    ElytraState state = StateHandler.getStateFromStack(stack);
                     return switch (state) {
                         case NORMAL -> 0.0f;
                         case RUFFLED -> 0.25f;

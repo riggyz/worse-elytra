@@ -1,8 +1,8 @@
 package com.riggyz.worse_elytra.mixin;
 
 import com.riggyz.worse_elytra.elytra.CustomMechanics;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
+import com.riggyz.worse_elytra.elytra.StateHandler;
+import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -28,14 +28,27 @@ import java.util.WeakHashMap;
 @Mixin(Player.class)
 public abstract class PlayerFlightMixin {
 
+    /** Runtime only map of players flight data */
     private static final Map<UUID, FlightData> FLIGHT_DATA = new WeakHashMap<>();
+    /** Runtime only map of who has the hud enabled */
     private static final Map<UUID, Boolean> HUD_ENABLED = new WeakHashMap<>();
 
+    /**
+     * Flight data class that encapsulates some data that the mixin collects.
+     */
     public static class FlightData {
+        /** Last known flight position */
         public Vec3 lastPosition;
+        /** Flight distance this session */
         public double totalDistance;
+        /** Whether the player was flying */
         public boolean wasFlying;
 
+        /**
+         * Public consturctor for the Flightdata class.
+         * 
+         * @param startPos position to create class instance with
+         */
         public FlightData(Vec3 startPos) {
             this.lastPosition = startPos;
             this.totalDistance = 0;
@@ -43,6 +56,11 @@ public abstract class PlayerFlightMixin {
         }
     }
 
+    /**
+     * Public wrapper that toggles the HUD for a given player.
+     * 
+     * @param player entity to toggle hud for
+     */
     public static void toggleDebugHUD(Player player) {
         UUID id = player.getUUID();
         boolean current = HUD_ENABLED.getOrDefault(id, false);
@@ -74,15 +92,7 @@ public abstract class PlayerFlightMixin {
         // return;
         // }
 
-        ElytraState state = ElytraStateHandler.getStateFromStack(elytra);
-
-        // Can't fly if broken
-        // FIXME: wtf is this for????
-        if (!state.canFly() && isFlying) {
-            player.stopFallFlying();
-            return;
-        }
-
+        ElytraState state = StateHandler.getStateFromStack(elytra);
         if (isFlying) {
             if (data == null || !data.wasFlying) {
                 // Just started flying

@@ -16,10 +16,21 @@ public class Constants {
 	public static final String MOD_NAME = "Worse Elytra";
 	/** Constant for the mod specific logger */
 	public static final Logger LOG = LoggerFactory.getLogger(MOD_NAME);
+	/** OP level required to run the commands */
+	public static final int OP_LEVEL = 2;
 
 	// NOTE: Elytra mechanic related constants
 	/** The maximum durability an elytra can have */
 	public static final int ELYTRA_BASE_DURABILITY = 324;
+	/** The nbt key for all the state information */
+	public static final String ELYTRA_NBT_KEY = "elytra_state";
+
+	/** Amount of items needed to completely repair durability for a given state */
+	public static final int DURABILITY_REPAIR_COST = 4;
+	/** XP cost of the membrane repair item */
+	public static final int XP_PER_DURABILITY_MEMBRANE = 1;
+	/** XP cost of the membrane state repair item */
+	public static final int XP_PER_UPGRADE_MEMBRANE = 1;
 
 	// NOTE: Elytra visual related constants
 	/** Lore key for the normal elytra */

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 /**
  * The Forge-specific mixin that takes care of the elytra flight check.
  *
- * @see CustomElytra
+ * @see CustomMechanics
  * @see ElytraItem
  */
 @Mixin(ElytraItem.class)

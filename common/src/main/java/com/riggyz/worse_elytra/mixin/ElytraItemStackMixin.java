@@ -1,8 +1,8 @@
 package com.riggyz.worse_elytra.mixin;
 
 import com.riggyz.worse_elytra.elytra.CustomMechanics;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler;
-import com.riggyz.worse_elytra.elytra.ElytraStateHandler.ElytraState;
+import com.riggyz.worse_elytra.elytra.StateHandler;
+import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 import com.riggyz.worse_elytra.Constants;
 
 import net.minecraft.network.chat.Component;
@@ -30,6 +30,11 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ItemStack.class)
 public abstract class ElytraItemStackMixin {
 
+    /**
+     * Mandatory shadow function needed for mixin
+     * 
+     * @return the current item
+     */
     @Shadow
     public abstract Item getItem();
 
@@ -46,8 +51,8 @@ public abstract class ElytraItemStackMixin {
     private void worse_elytra$getStateBasedMaxDamage(CallbackInfoReturnable<Integer> cir) {
         if (this.getItem() instanceof ElytraItem) {
             ItemStack self = (ItemStack) (Object) this;
-            ElytraState state = ElytraStateHandler.getStateFromStack(self);
-            cir.setReturnValue(state.getMaxDurability(Constants.ELYTRA_BASE_DURABILITY));
+            ElytraState state = StateHandler.getStateFromStack(self);
+            cir.setReturnValue(state.getMaxDurability());
         }
     }
 
@@ -95,8 +100,8 @@ public abstract class ElytraItemStackMixin {
             return;
         }
 
-        ElytraState state = ElytraStateHandler.getStateFromStack(self);
-        int maxDamage = state.getMaxDurability(Constants.ELYTRA_BASE_DURABILITY);
+        ElytraState state = StateHandler.getStateFromStack(self);
+        int maxDamage = state.getMaxDurability();
         int damage = self.getDamageValue();
 
         if (maxDamage == 0) {
@@ -124,7 +129,7 @@ public abstract class ElytraItemStackMixin {
         }
 
         ItemStack self = (ItemStack) (Object) this;
-        ElytraState state = ElytraStateHandler.getStateFromStack(self);
+        ElytraState state = StateHandler.getStateFromStack(self);
         Component baseName = cir.getReturnValue();
 
         String prefixKey = switch (state) {
