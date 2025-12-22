@@ -1,12 +1,12 @@
 package com.riggyz.worse_elytra.mixin;
 
 import com.riggyz.worse_elytra.Constants;
+import com.riggyz.worse_elytra.elytra.Helpers;
 import com.riggyz.worse_elytra.elytra.StateHandler;
 import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -44,11 +44,11 @@ public class ElytraItemMixin {
             CallbackInfo ci) {
 
         // Only affect elytras
-        if (!(stack.getItem() instanceof ElytraItem)) {
+        if (!Helpers.isElytra(stack)) {
             return;
         }
 
-        ElytraState state = StateHandler.getStateFromStack(stack);
+        ElytraState state = StateHandler.getState(stack);
 
         String loreKey = switch (state) {
             case NORMAL -> Constants.ELYTRA_NORMAL_LORE_KEY;

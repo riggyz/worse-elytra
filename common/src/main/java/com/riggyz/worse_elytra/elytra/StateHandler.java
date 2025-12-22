@@ -3,7 +3,6 @@ package com.riggyz.worse_elytra.elytra;
 import com.riggyz.worse_elytra.Constants;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -128,18 +127,6 @@ public class StateHandler {
         }
     }
 
-    /**
-     * TODO: this really should be moved somwehere else
-     * 
-     * @param player foo
-     * @param elytra foo
-     * 
-     * @return foo
-     */
-    public static boolean isOnCooldown(Player player, ItemStack elytra) {
-        return player.getCooldowns().isOnCooldown(elytra.getItem());
-    }
-
     // NOTE: public state helpers
 
     /**
@@ -149,7 +136,7 @@ public class StateHandler {
      * 
      * @return state of the given item
      */
-    public static ElytraState getStateFromStack(ItemStack stack) {
+    public static ElytraState getState(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         if (tag == null)
             return ElytraState.NORMAL;

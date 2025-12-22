@@ -1,6 +1,7 @@
 package com.riggyz.worse_elytra;
 
 import com.riggyz.worse_elytra.client.ElytraHudRenderer;
+import com.riggyz.worse_elytra.elytra.Helpers;
 import com.riggyz.worse_elytra.elytra.StateHandler;
 import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
@@ -8,7 +9,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.Items;
 
 /**
@@ -37,11 +37,11 @@ public class WorseElytraClient implements ClientModInitializer {
                 Items.ELYTRA,
                 new ResourceLocation(Constants.MOD_ID, "state"),
                 (stack, level, entity, seed) -> {
-                    if (!(stack.getItem() instanceof ElytraItem)) {
+                    if (!Helpers.isElytra(stack)) {
                         return 0.0f;
                     }
 
-                    ElytraState state = StateHandler.getStateFromStack(stack);
+                    ElytraState state = StateHandler.getState(stack);
                     return switch (state) {
                         case NORMAL -> 0.0f;
                         case RUFFLED -> 0.25f;

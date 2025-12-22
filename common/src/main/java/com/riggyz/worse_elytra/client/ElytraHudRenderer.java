@@ -1,6 +1,7 @@
 package com.riggyz.worse_elytra.client;
 
 import com.riggyz.worse_elytra.Constants;
+import com.riggyz.worse_elytra.elytra.Helpers;
 import com.riggyz.worse_elytra.elytra.StateHandler;
 import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
@@ -8,10 +9,7 @@ import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ElytraItem;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * Wrapper class that takes care of all HUD rendering pertaining to elytra.
@@ -33,30 +31,21 @@ public class ElytraHudRenderer {
     /**
      * Render the cooldown indicator for an elytra if applicable.
      * 
-     * @param graphics the gui to render to
+     * @param graphics    the gui to render to
      * @param partialTick how far through the given tick the function is called
      */
     public static void render(GuiGraphics graphics, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
 
-        if (player == null) {
+        if (player == null
+                || mc.options.hideGui
+                || !Helpers.isElytraEquipped(player)
+                || !Helpers.isElytraOnCooldown(player)) {
             return;
         }
 
-        ItemStack chestStack = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (chestStack.isEmpty() || !(chestStack.getItem() instanceof ElytraItem)) {
-            return;
-        }
-
-        if (mc.options.hideGui) {
-            return;
-        }
-
-        ElytraState state = StateHandler.getStateFromStack(chestStack);
-        if (!StateHandler.isOnCooldown(player, chestStack)) {
-            return;
-        }
+        ElytraState state = StateHandler.getState(Helpers.getEquippedElytra(player));
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
@@ -70,7 +59,7 @@ public class ElytraHudRenderer {
             x += SPRITE_SIZE + 6;
         }
 
-        float cooldownPercent = player.getCooldowns().getCooldownPercent(chestStack.getItem(), partialTick);
+        float cooldownPercent = Helpers.getElytraCooldownPercent(player, partialTick);
         renderAttackIndicatorStyle(graphics, x, y, state, cooldownPercent);
     }
 

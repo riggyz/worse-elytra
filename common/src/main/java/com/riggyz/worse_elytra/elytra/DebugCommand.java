@@ -2,16 +2,14 @@ package com.riggyz.worse_elytra.elytra;
 
 import com.riggyz.worse_elytra.Constants;
 import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
-import com.riggyz.worse_elytra.mixin.PlayerFlightMixin;
 import com.riggyz.worse_elytra.platform.Services;
-import com.mojang.brigadier.Command;
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -28,25 +26,21 @@ public class DebugCommand {
      * @param dispatcher the command dispater to register to
      */
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        if (!Services.PLATFORM.isDevelopmentEnvironment()) {
-            return;
-        }
+        // if (!Services.PLATFORM.isDevelopmentEnvironment()) {
+        //     return;
+        // }
 
         dispatcher.register(Commands.literal("elytra")
                 // OP-only commands (modify elytra state/durability)
                 .then(breakWingsCommandBuilder())
-                .then(Commands.literal("repair")
-                        .requires(source -> source.hasPermission(Constants.OP_LEVEL))
-                        .executes(context -> repairFull(context.getSource())))
-                .then(Commands.literal("degrade")
-                        .requires(source -> source.hasPermission(Constants.OP_LEVEL))
-                        .executes(context -> forceDegradation(context.getSource())))
+                .then(repairWingsCommandBuilder())
+                .then(degradeWingsCommandBuilder())
                 .then(setStateCommandBuilder())
                 // Available to all players
                 .then(Commands.literal("hud")
                         .executes(context -> {
                             if (context.getSource().getEntity() instanceof Player player) {
-                                PlayerFlightMixin.toggleDebugHUD(player);
+                                FlightDataHandler.toggleDebugHUD(player);
                                 return 1;
                             }
                             return 0;
@@ -59,37 +53,36 @@ public class DebugCommand {
      * Private builder that creates the break subcommand. Takes care of
      * permissions and registering the name.
      * 
-     * TODO: functionality needs to be re-implemented
-     * 
      * @return the command stack
      */
     private static LiteralArgumentBuilder<CommandSourceStack> breakWingsCommandBuilder() {
+        final float damagePercent = 0.99f;
         LiteralArgumentBuilder<CommandSourceStack> command = Commands.literal("break");
         command.requires(source -> source.hasPermission(Constants.OP_LEVEL));
 
         command.executes(context -> {
-            // TODO: this needs to be reimplemented
-            // if (!(source.getEntity() instanceof Player player)) {
-            // source.sendFailure(Component.literal("Must be run by a player"));
-            // return 0;
-            // }
+            CommandSourceStack source = context.getSource();
 
-            // ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
+            if (!(source.getEntity() instanceof Player player)) {
+                source.sendFailure(Component.literal("Must be run by a player"));
+                return 0;
+            }
 
-            // if (!StateHandler.isElytra(chestItem)) {
-            // source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
-            // return 0;
-            // }
+            if (!Helpers.isElytraEquipped(player)) {
+                source.sendFailure(Component.literal("You must be wearing an Elytra"));
+                return 0;
+            }
 
-            // int maxDamage = chestItem.getMaxDamage();
-            // int newDamage = Math.min((int) (maxDamage * percent), maxDamage - 1);
-            // chestItem.setDamageValue(newDamage);
+            ItemStack elytraStack = Helpers.getEquippedElytra(player);
+            int maxDamage = elytraStack.getMaxDamage();
+            int newDamage = Math.min((int) (maxDamage * damagePercent), maxDamage - 1);
+            elytraStack.setDamageValue(newDamage);
 
-            // int remainingHealth = maxDamage - newDamage;
-            // source.sendSuccess(() -> Component.literal(
-            // String.format("Set durability to %d/%d (%.0f%% health)",
-            // remainingHealth, maxDamage, (1.0f - percent) * 100)),
-            // false);
+            int remainingHealth = maxDamage - newDamage;
+            source.sendSuccess(() -> Component.literal(
+                    String.format("Set durability to %d/%d (%.0f%% health)",
+                            remainingHealth, maxDamage, (1.0f - damagePercent) * 100)),
+                    false);
 
             return 1;
         });
@@ -97,62 +90,85 @@ public class DebugCommand {
         return command;
     }
 
-    private static int repairFull(CommandSourceStack source) {
-        // TODO: this needs to be reimplemented
-        // if (!(source.getEntity() instanceof Player player)) {
-        // source.sendFailure(Component.literal("Must be run by a player"));
-        // return 0;
-        // }
+    /**
+     * Private builder that creates the repair subcommand. Takes care of
+     * permissions and registering the name.
+     * 
+     * @return the command stack
+     */
+    private static LiteralArgumentBuilder<CommandSourceStack> repairWingsCommandBuilder() {
+        LiteralArgumentBuilder<CommandSourceStack> command = Commands.literal("repair");
+        command.requires(source -> source.hasPermission(Constants.OP_LEVEL));
 
-        // ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
+        command.executes(context -> {
+            CommandSourceStack source = context.getSource();
 
-        // if (!StateHandler.isElytra(chestItem)) {
-        // source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
-        // return 0;
-        // }
+            if (!(source.getEntity() instanceof Player player)) {
+                source.sendFailure(Component.literal("Must be run by a player"));
+                return 0;
+            }
 
-        // StateHandler.fullyRepair(chestItem);
-        // source.sendSuccess(() -> Component.literal("Elytra fully repaired to NORMAL
-        // state! "), false);
+            if (!Helpers.isElytraEquipped(player)) {
+                source.sendFailure(Component.literal("You must be wearing an Elytra"));
+                return 0;
+            }
 
-        return 1;
+            ItemStack elytraStack = Helpers.getEquippedElytra(player);
+            StateHandler.setState(elytraStack, ElytraState.NORMAL);
+            elytraStack.setDamageValue(0);
+            source.sendSuccess(() -> Component.literal("Elytra fully repaired to NORMAL state! "), false);
+
+            return 1;
+        });
+
+        return command;
     }
 
-    private static int forceDegradation(CommandSourceStack source) {
-        // TODO: this needs to be reimplemented
+    /**
+     * Private builder that creates the degrade subcommand. Takes care of
+     * permissions and registering the name.
+     * 
+     * @return the command stack
+     */
+    private static LiteralArgumentBuilder<CommandSourceStack> degradeWingsCommandBuilder() {
+        LiteralArgumentBuilder<CommandSourceStack> command = Commands.literal("degrade");
+        command.requires(source -> source.hasPermission(Constants.OP_LEVEL));
 
-        // if (!(source.getEntity() instanceof Player player)) {
-        // source.sendFailure(Component.literal("Must be run by a player"));
-        // return 0;
-        // }
+        command.executes(context -> {
+            CommandSourceStack source = context.getSource();
 
-        // ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
+            if (!(source.getEntity() instanceof Player player)) {
+                source.sendFailure(Component.literal("Must be run by a player"));
+                return 0;
+            }
 
-        // if (!StateHandler.isElytra(chestItem)) {
-        // source.sendFailure(Component.literal("You must be wearing a Custom Elytra"));
-        // return 0;
-        // }
+            if (!Helpers.isElytraEquipped(player)) {
+                source.sendFailure(Component.literal("You must be wearing an Elytra"));
+                return 0;
+            }
 
-        // ElytraState oldState = StateHandler.getStateFromStack(chestItem);
-        // boolean degraded = StateHandler.onDurabilityDepleted(player, chestItem);
+            ItemStack elytraStack = Helpers.getEquippedElytra(player);
+            ElytraState oldState = StateHandler.getState(elytraStack);
+            CustomMechanics.handleDegradation(player, elytraStack);
+            ElytraState newState = StateHandler.getState(elytraStack);
+            if (oldState != newState) {
 
-        // if (degraded) {
-        // ElytraState newState = StateHandler.getStateFromStack(chestItem);
-        // source.sendSuccess(() -> Component.literal(
-        // "Degraded elytra: " + oldState.name() + " → " + newState.name()), false);
-        // } else {
-        // source.sendFailure(Component.literal("Elytra is already BROKEN!"));
-        // }
+                source.sendSuccess(() -> Component.literal(
+                        "Degraded elytra: " + oldState.name() + " → " + newState.name()), false);
+            } else {
+                source.sendFailure(Component.literal("Elytra is already BROKEN!"));
+            }
 
-        return 1;
+            return 1;
+        });
+
+        return command;
     }
 
     /**
      * Private builder that creates the set state subcommands. Takes care of
      * permissions and registering the name.
-     * 
-     * TODO: functionality needs to be re-implemented
-     * 
+     *
      * @return the command stack
      */
     private static LiteralArgumentBuilder<CommandSourceStack> setStateCommandBuilder() {
@@ -160,27 +176,27 @@ public class DebugCommand {
         commands.requires(source -> source.hasPermission(Constants.OP_LEVEL));
 
         // try to mitigate nesting
-        for (int i = 0; i < 4; i++) {
-            // commands.then(Commands.literal("normal").executes(context -> {
-            // // if (!(source.getEntity() instanceof Player player)) {
-            // // source.sendFailure(Component.literal("Must be run by a player"));
-            // // return 0;
-            // // }
+        for (ElytraState state : ElytraState.values()) {
+            commands.then(Commands.literal(state.name()).executes(context -> {
+                CommandSourceStack source = context.getSource();
 
-            // // ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
+                if (!(source.getEntity() instanceof Player player)) {
+                    source.sendFailure(Component.literal("Must be run by a player"));
+                    return 0;
+                }
 
-            // // if (!StateHandler.isElytra(chestItem)) {
-            // // source.sendFailure(Component.literal("You must be wearing a Custom
-            // Elytra"));
-            // // return 0;
-            // // }
+                if (!Helpers.isElytraEquipped(player)) {
+                    source.sendFailure(Component.literal("You must be wearing an Elytra"));
+                    return 0;
+                }
 
-            // // StateHandler.setState(chestItem, state);
-            // // source.sendSuccess(() -> Component.literal("Set elytra state to " +
-            // // state.name()), false);
+                ItemStack elytraStack = Helpers.getEquippedElytra(player);
+                StateHandler.setState(elytraStack, state);
+                source.sendSuccess(() -> Component.literal("Set elytra state to " +
+                        state.name()), false);
 
-            // return 0;
-            // }));
+                return 0;
+            }));
         }
 
         return commands;

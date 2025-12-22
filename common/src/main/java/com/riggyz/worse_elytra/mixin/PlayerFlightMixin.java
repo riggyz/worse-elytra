@@ -1,12 +1,14 @@
 package com.riggyz.worse_elytra.mixin;
 
 import com.riggyz.worse_elytra.elytra.CustomMechanics;
+import com.riggyz.worse_elytra.elytra.FlightDataHandler;
+import com.riggyz.worse_elytra.elytra.Helpers;
 import com.riggyz.worse_elytra.elytra.StateHandler;
+import com.riggyz.worse_elytra.elytra.FlightDataHandler.FlightData;
 import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -16,9 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Map;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 /**
  * Mixin class that targets the Players. We target players specifically because
@@ -28,50 +28,13 @@ import java.util.WeakHashMap;
 @Mixin(Player.class)
 public abstract class PlayerFlightMixin {
 
-    /** Runtime only map of players flight data */
-    private static final Map<UUID, FlightData> FLIGHT_DATA = new WeakHashMap<>();
-    /** Runtime only map of who has the hud enabled */
-    private static final Map<UUID, Boolean> HUD_ENABLED = new WeakHashMap<>();
 
-    /**
-     * Flight data class that encapsulates some data that the mixin collects.
-     */
-    public static class FlightData {
-        /** Last known flight position */
-        public Vec3 lastPosition;
-        /** Flight distance this session */
-        public double totalDistance;
-        /** Whether the player was flying */
-        public boolean wasFlying;
-
-        /**
-         * Public consturctor for the Flightdata class.
-         * 
-         * @param startPos position to create class instance with
-         */
-        public FlightData(Vec3 startPos) {
-            this.lastPosition = startPos;
-            this.totalDistance = 0;
-            this.wasFlying = true;
-        }
-    }
-
-    /**
-     * Public wrapper that toggles the HUD for a given player.
-     * 
-     * @param player entity to toggle hud for
-     */
-    public static void toggleDebugHUD(Player player) {
-        UUID id = player.getUUID();
-        boolean current = HUD_ENABLED.getOrDefault(id, false);
-        HUD_ENABLED.put(id, !current);
-    }
 
     /**
      * Injected mehtod, just serves as a wrapper to call flight tracker on the
      * server every tick
      * 
-     * @see FlightDistanceTracker
+     * @see FlightDataHandler
      * 
      * @param ci mixin callback handler
      */
@@ -84,20 +47,20 @@ public abstract class PlayerFlightMixin {
 
         UUID playerId = player.getUUID();
         boolean isFlying = player.isFallFlying();
-        FlightData data = FLIGHT_DATA.get(playerId);
+        FlightData data = FlightDataHandler.getFlightData(playerId);
 
-        ItemStack elytra = player.getItemBySlot(EquipmentSlot.CHEST);
+        ItemStack elytra = Helpers.getEquippedElytra(player);
         // if (!ElytraStateHandler.isCustomElytra(elytra)) {
         // FLIGHT_DATA.remove(playerId);
         // return;
         // }
 
-        ElytraState state = StateHandler.getStateFromStack(elytra);
+        ElytraState state = StateHandler.getState(elytra);
         if (isFlying) {
             if (data == null || !data.wasFlying) {
                 // Just started flying
                 data = new FlightData(player.position());
-                FLIGHT_DATA.put(playerId, data);
+                FlightDataHandler.setFlightData(playerId, data);
             } else {
                 // Continue tracking distance
                 Vec3 currentPos = player.position();
@@ -110,12 +73,12 @@ public abstract class PlayerFlightMixin {
                 if (data.totalDistance >= maxDistance) {
                     data.wasFlying = false;
                     data.totalDistance = 0;
-                    CustomMechanics.kickOutOfFlight(player, elytra);
+                    CustomMechanics.handleExhaustion(player, elytra);
                     return;
                 }
             }
 
-            if (HUD_ENABLED.getOrDefault(playerId, false)) {
+            if (FlightDataHandler.getHudData(playerId)) {
                 displayDebugHUD(player, elytra, state, data);
             }
 
@@ -124,7 +87,7 @@ public abstract class PlayerFlightMixin {
         else if (data != null && data.wasFlying && !player.onGround()) {
             // do nothing
         } else {
-            FLIGHT_DATA.remove(playerId);
+            FlightDataHandler.removeFlightData(playerId);
         }
     }
 

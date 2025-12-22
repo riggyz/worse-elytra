@@ -1,6 +1,7 @@
 package com.riggyz.worse_elytra.mixin;
 
 import com.riggyz.worse_elytra.elytra.CustomMechanics;
+import com.riggyz.worse_elytra.elytra.Helpers;
 import com.riggyz.worse_elytra.elytra.StateHandler;
 import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 import com.riggyz.worse_elytra.Constants;
@@ -8,14 +9,11 @@ import com.riggyz.worse_elytra.Constants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ElytraItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Consumer;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -30,14 +28,6 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ItemStack.class)
 public abstract class ElytraItemStackMixin {
 
-    /**
-     * Mandatory shadow function needed for mixin
-     * 
-     * @return the current item
-     */
-    @Shadow
-    public abstract Item getItem();
-
     // NOTE: The mixins that change the damage mechanics
 
     /**
@@ -49,9 +39,10 @@ public abstract class ElytraItemStackMixin {
      */
     @Inject(method = "getMaxDamage", at = @At("HEAD"), cancellable = true)
     private void worse_elytra$getStateBasedMaxDamage(CallbackInfoReturnable<Integer> cir) {
-        if (this.getItem() instanceof ElytraItem) {
-            ItemStack self = (ItemStack) (Object) this;
-            ElytraState state = StateHandler.getStateFromStack(self);
+        ItemStack self = (ItemStack) (Object) this;
+
+        if (Helpers.isElytra(self)) {
+            ElytraState state = StateHandler.getState(self);
             cir.setReturnValue(state.getMaxDurability());
         }
     }
@@ -73,8 +64,7 @@ public abstract class ElytraItemStackMixin {
             Consumer<T> onBreak,
             CallbackInfo ci) {
         ItemStack self = (ItemStack) (Object) this;
-
-        if (!(self.getItem() instanceof ElytraItem) || !(entity instanceof Player player)) {
+        if (!Helpers.isElytra(self) || !(entity instanceof Player player)) {
             return;
         }
 
@@ -96,11 +86,11 @@ public abstract class ElytraItemStackMixin {
     private void worse_elytra$barWidthDerivedFromState(CallbackInfoReturnable<Integer> cir) {
         ItemStack self = (ItemStack) (Object) this;
 
-        if (!(self.getItem() instanceof ElytraItem)) {
+        if (!Helpers.isElytra(self)) {
             return;
         }
 
-        ElytraState state = StateHandler.getStateFromStack(self);
+        ElytraState state = StateHandler.getState(self);
         int maxDamage = state.getMaxDurability();
         int damage = self.getDamageValue();
 
@@ -124,12 +114,13 @@ public abstract class ElytraItemStackMixin {
      */
     @Inject(method = "getHoverName", at = @At("RETURN"), cancellable = true)
     private void worse_elytra$addStatePrefix(CallbackInfoReturnable<Component> cir) {
-        if (!(this.getItem() instanceof ElytraItem)) {
+        ItemStack self = (ItemStack) (Object) this;
+
+        if (!Helpers.isElytra(self)) {
             return;
         }
 
-        ItemStack self = (ItemStack) (Object) this;
-        ElytraState state = StateHandler.getStateFromStack(self);
+        ElytraState state = StateHandler.getState(self);
         Component baseName = cir.getReturnValue();
 
         String prefixKey = switch (state) {

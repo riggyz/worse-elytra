@@ -12,7 +12,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -38,9 +37,9 @@ public class CustomMechanics {
         /**
          * Public constructor for the RepairResult class.
          * 
-         * @param output item to use as a result
+         * @param output        item to use as a result
          * @param materialsUsed how many materials were used in crafting
-         * @param xpCost how much XP should it cost
+         * @param xpCost        how much XP should it cost
          */
         public RepairResult(ItemStack output, int materialsUsed, int xpCost) {
             this.output = output;
@@ -69,10 +68,10 @@ public class CustomMechanics {
         int effectiveMax = stack.getMaxDamage();
         boolean hasEnoughDurability = effectiveMax > 0 && stack.getDamageValue() < effectiveMax;
         boolean isOnCooldown = false;
-        ElytraState state = StateHandler.getStateFromStack(stack);
+        ElytraState state = StateHandler.getState(stack);
 
         if (entity instanceof Player player) {
-            isOnCooldown = player.getCooldowns().isOnCooldown(stack.getItem());
+            isOnCooldown = Helpers.isElytraOnCooldown(player);
         }
 
         return hasEnoughDurability && !isOnCooldown && state.allowsFlight();
@@ -86,7 +85,8 @@ public class CustomMechanics {
      * This does not overwrite standard all elytra repair calcs, rather it just
      * checks for phantom membranes.
      * 
-     * TODO: this needs to check for other elytras, and the logic needs to be cleaned up
+     * TODO: this needs to check for other elytras, and the logic needs to be
+     * cleaned up
      * 
      * @param stack    lefthand side of the anvil items
      * @param material righthand side of the anvil items
@@ -94,13 +94,13 @@ public class CustomMechanics {
      * @return either null or the calculated RepairResult class
      */
     public static RepairResult calculateRepair(ItemStack stack, ItemStack material) {
-        if (!(stack.getItem() instanceof ElytraItem
+        if (!(Helpers.isElytra(stack)
                 && !material.isEmpty()
                 && material.is(Items.PHANTOM_MEMBRANE))) {
             return null;
         }
 
-        ElytraState currentState = StateHandler.getStateFromStack(stack);
+        ElytraState currentState = StateHandler.getState(stack);
         int currentDamage = stack.getDamageValue();
         int remainingMaterials = material.getCount();
 
@@ -187,17 +187,16 @@ public class CustomMechanics {
      * @param stack  the eltra item to degrade
      */
     public static void handleDegradation(Player player, ItemStack stack) {
-        ElytraState currentState = StateHandler.getStateFromStack(stack);
+        ElytraState currentState = StateHandler.getState(stack);
         boolean canDegrade = currentState != ElytraState.BROKEN;
 
         // degrade to next state
         if (canDegrade) {
             ElytraState newState = currentState.degrade();
-            int degradationCooldown = currentState.baseCooldownTicks * 2;
 
             StateHandler.setState(stack, newState);
             stack.setDamageValue(0);
-            player.getCooldowns().addCooldown(stack.getItem(), degradationCooldown);
+            Helpers.setElytraCooldown(player, currentState.baseCooldownTicks * 2);
             player.level().playSound(
                     null,
                     player.getX(), player.getY(), player.getZ(),
@@ -225,10 +224,10 @@ public class CustomMechanics {
      * @param player the player to target
      * @param stack  the eltra item to degrade
      */
-    public static void kickOutOfFlight(Player player, ItemStack stack) {
-        ElytraState state = StateHandler.getStateFromStack(stack);
+    public static void handleExhaustion(Player player, ItemStack stack) {
+        ElytraState state = StateHandler.getState(stack);
 
-        player.getCooldowns().addCooldown(stack.getItem(), state.baseCooldownTicks);
+        Helpers.setElytraCooldown(player, state.baseCooldownTicks);
         player.level().playSound(
                 null,
                 player.getX(), player.getY(), player.getZ(),

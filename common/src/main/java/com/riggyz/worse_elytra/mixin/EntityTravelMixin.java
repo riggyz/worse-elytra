@@ -1,13 +1,11 @@
 package com.riggyz.worse_elytra.mixin;
 
+import com.riggyz.worse_elytra.elytra.Helpers;
 import com.riggyz.worse_elytra.elytra.StateHandler;
 import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ElytraItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,12 +36,11 @@ public abstract class EntityTravelMixin {
             return;
         }
 
-        ItemStack elytra = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (!(elytra.getItem() instanceof ElytraItem)) {
+        if (!Helpers.isElytraEquipped(player)) {
             return;
         }
 
-        ElytraState state = StateHandler.getStateFromStack(elytra);
+        ElytraState state = StateHandler.getState(Helpers.getEquippedElytra(player));
         if (state.dragMultiplier >= 1.0) {
             return;
         }

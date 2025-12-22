@@ -2,6 +2,7 @@ package com.riggyz.worse_elytra.mixin.client;
 
 import com.riggyz.worse_elytra.Constants;
 import com.riggyz.worse_elytra.client.ElytraMaskManager;
+import com.riggyz.worse_elytra.elytra.Helpers;
 import com.riggyz.worse_elytra.elytra.StateHandler;
 import com.riggyz.worse_elytra.elytra.StateHandler.ElytraState;
 
@@ -12,10 +13,7 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ElytraItem;
-import net.minecraft.world.item.ItemStack;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -72,9 +70,8 @@ public abstract class ElytraRenderMixin<T extends LivingEntity, M extends Entity
             float netHeadYaw,
             float headPitch) {
 
-        ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
-        if (chestStack.getItem() instanceof ElytraItem) {
-            ElytraState state = StateHandler.getStateFromStack(chestStack);
+        if (Helpers.isElytraEquipped(entity)) {
+            ElytraState state = StateHandler.getState(Helpers.getEquippedElytra(entity));
 
             // Apply mask when broken
             if (state == ElytraState.BROKEN) {

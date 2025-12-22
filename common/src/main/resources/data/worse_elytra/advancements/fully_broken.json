@@ -1,7 +1,7 @@
 {
     "display": {
         "icon": {
-            "item": "worse_elytra:custom_elytra",
+            "item": "minecraft:elytra",
             "nbt": "{elytra_state:\"BROKEN\"}"
         },
         "title": {
