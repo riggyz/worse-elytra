@@ -19,7 +19,7 @@
             "com.riggyz.worse_elytra.WorseElytra"
         ],
         "client": [
-            "com.riggyz.worse_elytra.client.WorseElytraClient"
+            "com.riggyz.worse_elytra.WorseElytraClient"
         ]
     },
     "mixins": [

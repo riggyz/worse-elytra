@@ -11,7 +11,7 @@
         "ElytraItemStackMixin"
     ],
     "client": [
-        "client.ElytraRenderMixin"
+        "client.ElytraLayerMixin"
     ],
     "server": [],
     "injectors": {

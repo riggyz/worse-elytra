@@ -1,9 +1,10 @@
 package com.riggyz.worse_elytra.elytra;
 
+import com.riggyz.worse_elytra.platform.Services;
+
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -17,15 +18,13 @@ public class Helpers {
     // NOTE: Simple logic helpers
 
     public static boolean isElytra(ItemStack stack) {
-        return stack.getItem() instanceof ElytraItem;
+        return stack.is(Items.ELYTRA);
     }
 
     /**
      * Checks whether the player has the elytra equipped. Useful to gate rendering
      * or mixin logic, and removes the need to extract what the player is using in
      * code that should not care.
-     * 
-     * TODO: this should also check for trinkets and curios down the line
      * 
      * @param entity the player to check
      * 
@@ -34,9 +33,11 @@ public class Helpers {
     public static boolean isElytraEquipped(Player entity) {
         boolean result = false;
         ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
+        ItemStack moddedStack = Services.PLATFORM.checkModdedSlots(entity);
 
         // check chest by default
         result = !chestStack.isEmpty() && isElytra(chestStack);
+        result = result || (moddedStack != ItemStack.EMPTY);
 
         return result;
     }
@@ -57,16 +58,15 @@ public class Helpers {
      * there are curios or
      * trinkets.
      * 
-     * TODO: this should also check for trinkets and curios down the line
-     * 
      * @param entity the player to check
      * 
      * @return the ItemStack of the equipped elytra
      */
     public static ItemStack getEquippedElytra(Player entity) {
         ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
+        ItemStack moddedStack = Services.PLATFORM.checkModdedSlots(entity);
 
-        return chestStack;
+        return moddedStack != ItemStack.EMPTY ? moddedStack : chestStack;
     }
 
     public static ItemStack getEquippedElytra(LivingEntity entity) {

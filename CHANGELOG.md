@@ -16,9 +16,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Removed
 -
 
-## [0.1.1] - 2025-12-20
+## [0.2.0] - 2025-12-20
 ### Added
 - Added two custom advancements
+- Added Curios compatibility
+- TODO: Add Trinkes compatibility
+- TODO: Add Elytra Slot compatibility
 
 ### Fixed
 - Fixed an issue where the mixin definition was incorrectly named
@@ -26,8 +29,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 - Rebalanced elytra thanks to player testing
-- TODO: Flight changes applied to the vanilla item
-- TODO: Magic numbers have been moved into a config file
+- Flight changes applied to the vanilla item
+- Magic numbers have been moved into a config file
 
 ### Removed
 - TODO: Cleaned up the codebase

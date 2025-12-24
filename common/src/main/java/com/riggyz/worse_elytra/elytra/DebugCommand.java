@@ -26,6 +26,7 @@ public class DebugCommand {
      * @param dispatcher the command dispater to register to
      */
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        // TODO: uncomment this
         // if (!Services.PLATFORM.isDevelopmentEnvironment()) {
         //     return;
         // }

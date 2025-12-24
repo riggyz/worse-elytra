@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * on but for now only has a broken stage.
  */
 @Mixin(ElytraLayer.class)
-public abstract class ElytraRenderMixin<T extends LivingEntity, M extends EntityModel<T>>
+public abstract class ElytraLayerMixin<T extends LivingEntity, M extends EntityModel<T>>
         extends RenderLayer<T, M> {
 
     private static final ResourceLocation CUSTOM_ELYTRA_MASK = new ResourceLocation(Constants.MOD_ID,
@@ -34,29 +34,12 @@ public abstract class ElytraRenderMixin<T extends LivingEntity, M extends Entity
      * Mandatory function so that we can overwrite the elytra rendering code with
      * this mixin.
      * 
-     * @param parent no idea what this is for
+     * @param parent parent renderer
      */
-    public ElytraRenderMixin(RenderLayerParent<T, M> parent) {
+    public ElytraLayerMixin(RenderLayerParent<T, M> parent) {
         super(parent);
     }
 
-    /**
-     * Injected method that takes care of adding our masking texture overlay. It is
-     * done so that when the elytra is broken we get a texture that looks like the
-     * elytra is damaged.
-     * 
-     * @param originalTexture
-     * @param poseStack
-     * @param buffer
-     * @param packedLight
-     * @param entity
-     * @param limbSwing
-     * @param limbSwingAmount
-     * @param partialTick
-     * @param ageInTicks
-     * @param netHeadYaw
-     * @param headPitch
-     */
     @Redirect(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderType;armorCutoutNoCull(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/RenderType;"))
     private RenderType worse_elytra$modifyElytraRenderType(ResourceLocation originalTexture,
             com.mojang.blaze3d.vertex.PoseStack poseStack,

@@ -24,3 +24,10 @@ mandatory = true
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
+# NOTE: optional mod dependencies
+[[dependencies.${mod_id}]]
+modId = "curios"
+mandatory = false
+versionRange = "[5.2.0-beta,)" # HACK: I hate it is done this way but I need help undertanding why custom keys won't work
+ordering= "NONE"
+side = "BOTH"

@@ -1,5 +1,8 @@
 package com.riggyz.worse_elytra.platform.services;
 
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
 /**
  * Generic platform interface for functions that can be used to get metadata.
  */
@@ -36,4 +39,14 @@ public interface IPlatformHelper {
 
         return isDevelopmentEnvironment() ? "development" : "production";
     }
+
+
+    /**
+     * Extension that checks if the modded slots contain an elytra. Used so that Curio/Trinket compat is safe and easy.
+     * 
+     * @param player player to check
+     * 
+     * @return the elytra stack if found, Items.EMPTY otherwise
+     */
+    ItemStack checkModdedSlots(Player player);
 }
