@@ -88,7 +88,7 @@ jobs:
           name: forge-artifacts
           path: ./forge/build/libs
 
-      - name: Publish to Curseforge
+      - name: Publish to Curseforge  and Modrinth
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           files: |
@@ -97,14 +97,6 @@ jobs:
           name: ${{ github.ref_name }}-forge
           curseforge-id: ${{ secrets.CURSEFORGE_ID }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-
-      - name: Publish to Modrinth
-        uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          files: |
-            forge/build/libs/!(*-@(dev|sources|javadoc)).jar
-          changelog: ${{ needs.build.outputs.changelog }}
-          name: ${{ github.ref_name }}-forge
           modrinth-id: ${{ secrets.MODRINTH_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
@@ -119,7 +111,7 @@ jobs:
           name: fabric-artifacts
           path: ./fabric/build/libs
 
-      - name: Publish to Curseforge
+      - name: Publish to Curseforge and Modrinth
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           files: |
@@ -128,14 +120,6 @@ jobs:
           name: ${{ github.ref_name }}-fabric
           curseforge-id: ${{ secrets.CURSEFORGE_ID }}
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-
-      - name: Publish to Modrinth
-        uses: Kir-Antipov/mc-publish@v3.3
-        with:
-          files: |
-            fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
-          changelog: ${{ needs.build.outputs.changelog }}
-          name: ${{ github.ref_name }}-fabric
           modrinth-id: ${{ secrets.MODRINTH_ID }}
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 

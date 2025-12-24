@@ -5,6 +5,7 @@ Elytras as they are in vanilla have a problem for modded transportation - they a
 
 ![Modrinth Downloads](https://img.shields.io/modrinth/dt/jE8liuPn?logo=modrinth&logoColor=%2300AF5C&link=https%3A%2F%2Fmodrinth.com%2Fmod%2Fworse-elytra)
 
+[![Build and Publish](https://github.com/riggyz/worse-elytra/actions/workflows/build-and-publish.yml/badge.svg)](https://github.com/riggyz/worse-elytra/actions/workflows/build-and-publish.yml)
 
 ## TODOs 
 This is a list of immediate items I am trying to take care of:

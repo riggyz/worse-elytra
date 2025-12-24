@@ -5,8 +5,6 @@ import com.riggyz.worse_elytra.platform.Services;
 /**
  * The generic mod class that is used to implement anything that can be generic
  * between the two modloaders.
- * 
- * @see WorseElytra
  */
 public class CommonClass {
 

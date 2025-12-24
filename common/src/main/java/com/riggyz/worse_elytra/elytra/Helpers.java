@@ -17,6 +17,14 @@ public class Helpers {
 
     // NOTE: Simple logic helpers
 
+    /**
+     * Very simple helper that abstracts the check for the elytra. Useful if things
+     * need to change in the future.
+     * 
+     * @param stack specific item to check
+     * 
+     * @return whether it is an elytra
+     */
     public static boolean isElytra(ItemStack stack) {
         return stack.is(Items.ELYTRA);
     }
@@ -42,6 +50,13 @@ public class Helpers {
         return result;
     }
 
+    /**
+     * Overload for isElytraEquipped, takes a living entity instead of a player
+     * 
+     * @param entity the entity to check
+     * 
+     * @return if the player has an elytra equipped
+     */
     public static boolean isElytraEquipped(LivingEntity entity) {
         boolean result = false;
         ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
@@ -69,6 +84,13 @@ public class Helpers {
         return moddedStack != ItemStack.EMPTY ? moddedStack : chestStack;
     }
 
+    /**
+     * Overload for getEquippedElytra, takes a living entity instead of a player
+     * 
+     * @param entity the entity to check
+     * 
+     * @return the ItemStack of the equipped elytra
+     */
     public static ItemStack getEquippedElytra(LivingEntity entity) {
         ItemStack chestStack = entity.getItemBySlot(EquipmentSlot.CHEST);
 
