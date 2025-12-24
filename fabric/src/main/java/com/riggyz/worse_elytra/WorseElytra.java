@@ -1,30 +1,32 @@
 package com.riggyz.worse_elytra;
 
-import com.riggyz.worse_elytra.command.ElytraDebugCommand;
-import com.riggyz.worse_elytra.item.FabricCustomElytraItem;
+import com.riggyz.worse_elytra.advancement.AdvancementTriggers;
+import com.riggyz.worse_elytra.elytra.DebugCommand;
+
+import net.minecraft.advancements.CriteriaTriggers;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 
+/**
+ * The high-level Fabric specific class for this mod. Takes care of things that
+ * can only happen in Fabric.
+ * 
+ * @see CommonClass
+ */
 public class WorseElytra implements ModInitializer {
 
+    /**
+     * The plubic method that initializes everything needed for both client and
+     * server.
+     */
     @Override
     public void onInitialize() {
-        Item customElytra = new FabricCustomElytraItem();
-        ModItems.CUSTOM_ELYTRA = customElytra;
-
-        Registry.register(
-                BuiltInRegistries.ITEM,
-                new ResourceLocation(Constants.MOD_ID, Constants.CUSTOM_ELYTRA_ID),
-                customElytra);
-
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            ElytraDebugCommand.register(dispatcher);
+            DebugCommand.register(dispatcher);
         });
+
+        CriteriaTriggers.register(AdvancementTriggers.ELYTRA_DEGRADED);
 
         CommonClass.init();
     }

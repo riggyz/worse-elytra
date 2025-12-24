@@ -3,6 +3,34 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Fabric Client (:fabric)",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/run",
+      "console": "integratedTerminal",
+      "stopOnEntry": false,
+      "mainClass": "net.fabricmc.devlaunchinjector.Main",
+      "vmArgs": "-Dfabric.dli.config\u003dC:\\_Src\\Prod\\worse-elytra\\fabric\\.gradle\\loom-cache\\launch.cfg -Dfabric.dli.env\u003dclient -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotClient",
+      "args": "",
+      "env": {},
+      "projectName": "fabric",
+      "runDir": "C:\\_Src\\Prod\\worse-elytra\\fabric\\run"
+    },
+    {
+      "type": "java",
+      "name": "Fabric Server (:fabric)",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/run",
+      "console": "integratedTerminal",
+      "stopOnEntry": false,
+      "mainClass": "net.fabricmc.devlaunchinjector.Main",
+      "vmArgs": "-Dfabric.dli.config\u003dC:\\_Src\\Prod\\worse-elytra\\fabric\\.gradle\\loom-cache\\launch.cfg -Dfabric.dli.env\u003dserver -Dfabric.dli.main\u003dnet.fabricmc.loader.impl.launch.knot.KnotServer",
+      "args": "nogui nogui",
+      "env": {},
+      "projectName": "fabric",
+      "runDir": "C:\\_Src\\Prod\\worse-elytra\\fabric\\run"
+    },
+    {
+      "type": "java",
       "request": "launch",
       "name": "forge - Client",
       "presentation": {

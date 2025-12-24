@@ -3,6 +3,13 @@ plugins {
     id 'net.neoforged.moddev.legacyforge'
 }
 
+repositories {
+    maven {
+        name = "Curios"
+        url = "https://maven.theillusivec4.top/"
+    }
+}
+
 mixin {
     add(sourceSets.main, "${mod_id}.refmap.json")
 
@@ -26,6 +33,9 @@ legacyForge {
     runs {
         client {
             client()
+
+            // property 'mixin.env.remapRefMap', 'true'
+            // property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
         }
         data {
             data()
@@ -48,6 +58,9 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 dependencies {
     compileOnly project(":common")
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
+
+    modCompileOnly "top.theillusivec4.curios:curios-forge:${curios_version}"
+    modRuntimeOnly "top.theillusivec4.curios:curios-forge:${curios_version}"
 }
 
 jar {

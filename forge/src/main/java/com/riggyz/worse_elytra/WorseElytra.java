@@ -1,40 +1,92 @@
 package com.riggyz.worse_elytra;
 
-import com.riggyz.worse_elytra.command.ElytraDebugCommand;
-import com.riggyz.worse_elytra.item.ForgeCustomElytraItem;
+import com.riggyz.worse_elytra.advancement.AdvancementTriggers;
+import com.riggyz.worse_elytra.elytra.DebugCommand;
+import com.riggyz.worse_elytra.elytra.CustomMechanics;
+import com.riggyz.worse_elytra.elytra.CustomMechanics.RepairResult;
 
-import net.minecraft.world.item.Item;
+import net.minecraft.advancements.CriteriaTriggers;
+
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
+/**
+ * The high-level Forge specific class for this mod. Takes care of things that
+ * can only happen in Forge.
+ * 
+ * @see CommonClass
+ */
 @Mod(Constants.MOD_ID)
 public class WorseElytra {
 
-    public static IEventBus eventBus;
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Constants.MOD_ID);
+    /** Forge specific loading bus */
+    public static IEventBus setupEventBus;
+    /** Forge specific in-game bus */
+    public static IEventBus runtimeEventBus;
 
+    /**
+     * Public constructor, in charge of registering certain events to the
+     * ModEventBus.
+     */
     public WorseElytra() {
-        eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        setupEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        runtimeEventBus = MinecraftForge.EVENT_BUS;
 
-        ITEMS.register(Constants.CUSTOM_ELYTRA_ID, () -> {
-            Item customElytra = new ForgeCustomElytraItem();
-            ModItems.CUSTOM_ELYTRA = customElytra;
+        setupEventBus.addListener(this::advancementSetup);
 
-            return customElytra;
-        });
-
-        ITEMS.register(eventBus);
-        MinecraftForge.EVENT_BUS.addListener(this::onRegisterCommands);
+        runtimeEventBus.addListener(this::onRegisterCommands);
+        runtimeEventBus.addListener(this::onAnvilUpdate);
 
         CommonClass.init();
     }
 
+    /**
+     * Helper function to register advancements to the ModEventBus. The logic itself
+     * is in common.
+     * 
+     * @see AdvancementTriggers
+     * 
+     * @param event the setup event to add work to
+     */
+    private void advancementSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            CriteriaTriggers.register(AdvancementTriggers.ELYTRA_DEGRADED);
+        });
+    }
+
+    /**
+     * Helper function to register the elytra debug commands. The commands
+     * themselves are in common.
+     * 
+     * @see ElytraDebugCommand
+     * 
+     * @param event the game event to ingest
+     */
     private void onRegisterCommands(RegisterCommandsEvent event) {
-        ElytraDebugCommand.register(event.getDispatcher());
+        DebugCommand.register(event.getDispatcher());
+    }
+
+    /**
+     * Helper function to register what should happen on elytra in anvil.
+     * 
+     * @see ElytraRepairHandler
+     * 
+     * @param event the game event to ingest
+     */
+    private void onAnvilUpdate(AnvilUpdateEvent event) {
+        RepairResult result = CustomMechanics.calculateRepair(
+                event.getLeft(),
+                event.getRight());
+
+        if (result != null) {
+            event.setOutput(result.output);
+            event.setCost(result.xpCost);
+            event.setMaterialCost(result.materialsUsed);
+        }
     }
 }

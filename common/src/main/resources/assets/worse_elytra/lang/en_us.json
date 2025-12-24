@@ -1,18 +1,13 @@
 {
-  "item.worse_elytra.custom_elytra": "Elytra",
   "item.worse_elytra.ruffled_prefix": "Ruffled",
   "item.worse_elytra.withered_prefix": "Withered",
   "item.worse_elytra.broken_prefix": "Broken",
-
   "lore.worse_elytra.normal": "They look to be in perfect condition, you feel as if you could fly forever.",
   "lore.worse_elytra.ruffled": "After hours of turbulent flight, these elytra have become ruffled and less effective.",
   "lore.worse_elytra.withered": "Sickly and damaged, these elytra struggle to keep you aloft.",
   "lore.worse_elytra.broken": "The broken spirit of these elytra yearn for flight, but they can no longer support it.",
-
-  "tooltip.worse_elytra.elytra_state": "State: ",
-  "tooltip.worse_elytra.extra_drag": "Drag Mult: ",
-  "tooltip.worse_elytra.speed_multiplier": "Speed: ",
-  "tooltip.worse_elytra.max_flight_distance": "Max Distance: ",
-  "tooltip.worse_elytra.cooldown_duration": "Cooldown: ",
-  "message.worse_elytra.flight_exhausted": "Flight exhausted! Elytra on cooldown..."
+  "advancements.worse_elytra.degraded_wings.title": "Falling Apart",
+  "advancements.worse_elytra.degraded_wings.description": "Degrade your elytra",
+  "advancements.worse_elytra.fully_broken.title": "Grounded",
+  "advancements.worse_elytra.fully_broken.description": "Break your elytra completely"
 }
