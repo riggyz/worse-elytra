@@ -85,8 +85,7 @@ public class CustomMechanics {
      * This does not overwrite standard all elytra repair calcs, rather it just
      * checks for phantom membranes.
      * 
-     * TODO: this needs to check for other elytras, and the logic needs to be
-     * cleaned up
+     * TODO: clean up this logic
      * 
      * @param stack    lefthand side of the anvil items
      * @param material righthand side of the anvil items
@@ -94,9 +93,8 @@ public class CustomMechanics {
      * @return either null or the calculated RepairResult class
      */
     public static RepairResult calculateRepair(ItemStack stack, ItemStack material) {
-        if (!(Helpers.isElytra(stack)
-                && !material.isEmpty()
-                && material.is(Items.PHANTOM_MEMBRANE))) {
+        if (!Helpers.isElytra(stack) &&
+                !(!material.isEmpty() && material.is(Items.PHANTOM_MEMBRANE))) {
             return null;
         }
 

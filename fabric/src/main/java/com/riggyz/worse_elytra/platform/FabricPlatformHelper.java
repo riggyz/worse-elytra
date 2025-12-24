@@ -1,5 +1,6 @@
 package com.riggyz.worse_elytra.platform;
 
+import com.riggyz.worse_elytra.compat.TrinketsCompat;
 import com.riggyz.worse_elytra.platform.services.IPlatformHelper;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -12,6 +13,8 @@ import net.minecraft.world.item.ItemStack;
  * @see IPlatformHelper
  */
 public class FabricPlatformHelper implements IPlatformHelper {
+
+    private static final boolean TRINKETS_LOADED = FabricLoader.getInstance().isModLoaded("trinkets");
 
     @Override
     public String getPlatformName() {
@@ -30,6 +33,10 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
     @Override
     public ItemStack checkModdedSlots(Player player) {
+        if (TRINKETS_LOADED) {
+            return TrinketsCompat.findElytraInTrinkets(player);
+        }
+
         return ItemStack.EMPTY;
     }
 }

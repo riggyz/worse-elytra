@@ -1,17 +1,17 @@
 package com.riggyz.worse_elytra.compat;
 
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import com.riggyz.worse_elytra.elytra.Helpers;
+
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
 
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
 import java.util.List;
 
-import com.riggyz.worse_elytra.elytra.Helpers;
-
 /**
- * This class will ONLY be loaded if Curios is present
- * DO NOT reference this class directly - use CuriosHelper instead
+ * This class will ONLY be loaded if Curios is present.
  */
 public class CuriosCompat {
 

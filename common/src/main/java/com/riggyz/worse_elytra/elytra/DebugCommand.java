@@ -26,10 +26,9 @@ public class DebugCommand {
      * @param dispatcher the command dispater to register to
      */
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        // TODO: uncomment this
-        // if (!Services.PLATFORM.isDevelopmentEnvironment()) {
-        //     return;
-        // }
+        if (!Services.PLATFORM.isDevelopmentEnvironment()) {
+            return;
+        }
 
         dispatcher.register(Commands.literal("elytra")
                 // OP-only commands (modify elytra state/durability)

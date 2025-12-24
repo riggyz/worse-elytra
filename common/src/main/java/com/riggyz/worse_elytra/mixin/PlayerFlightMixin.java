@@ -28,8 +28,6 @@ import java.util.UUID;
 @Mixin(Player.class)
 public abstract class PlayerFlightMixin {
 
-
-
     /**
      * Injected mehtod, just serves as a wrapper to call flight tracker on the
      * server every tick
@@ -83,10 +81,9 @@ public abstract class PlayerFlightMixin {
             }
 
         }
-        // TODO: very hacky fix, need to check more states
-        else if (data != null && data.wasFlying && !player.onGround()) {
-            // do nothing
-        } else {
+
+        // check to make sure we can clear the status info, resets when on ground ONLY
+        if (data != null && player.onGround() && !isFlying) {
             FlightDataHandler.removeFlightData(playerId);
         }
     }
